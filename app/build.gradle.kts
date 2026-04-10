@@ -2,6 +2,8 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.kapt)
+    alias(libs.plugins.hilt.android)
 }
 
 android {
@@ -37,6 +39,10 @@ android {
     buildFeatures {
         compose = true
     }
+
+    kapt {
+        includeCompileClasspath = false
+    }
 }
 
 dependencies {
@@ -64,4 +70,12 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+    implementation(libs.hilt.android)
+    implementation(libs.androidx.hilt.navigation.compose)
+    implementation(libs.androidx.hilt.work)
+    implementation(libs.androidx.hilt.common)
+    kapt(libs.hilt.compiler)
+    implementation(libs.gson)
+    implementation(libs.okhttp)
 }
