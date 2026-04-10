@@ -1,18 +1,24 @@
 package com.example.mobilesurapp.UIApp.Camera
 
+import android.app.Application
 import android.content.Context
 import androidx.camera.core.Preview
 import androidx.camera.core.SurfaceRequest
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.lifecycle.awaitInstance
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import androidx.camera.core.CameraSelector
+import androidx.lifecycle.AndroidViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
-class CameraViewModel : ViewModel() {
+@HiltViewModel
+class CameraViewModel @Inject constructor(
+    application: Application,
+) : AndroidViewModel(application) {
     private val _surfaceRequest = MutableStateFlow<SurfaceRequest?>(null)
     val surfaceRequest: StateFlow<SurfaceRequest?> = _surfaceRequest
 

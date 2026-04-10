@@ -12,6 +12,12 @@ composeBom = "2024.09.00"
 cameraX = "1.6.0"
 accompanist = "0.35.0-alpha"
 lifecycleViewmodelCompose = "2.10.0"
+hiltAndroid = "2.56.2"
+hiltCompiler = "2.56.2"
+hiltCommon = "1.2.0"
+hiltWork = "1.2.0"
+gson = "2.10.1"
+okhttp = "4.12.0"
 
 [libraries]
 androidx-camera-viewfinder-compose = { module = "androidx.camera:camera-viewfinder-compose", version.ref = "cameraViewfinderCompose" }
@@ -36,9 +42,17 @@ androidx-camera-compose = { module = "androidx.camera:camera-compose", version.r
 androidx-camera-lifecycle = { group = "androidx.camera", name = "camera-lifecycle", version.ref = "cameraX" }
 androidx-camera-camera2 = { module = "androidx.camera:camera-camera2", version.ref = "cameraX" }
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanist" }
+hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hiltAndroid" }
+hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hiltCompiler" }
+androidx-hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version = "1.2.0" }
+androidx-hilt-common = { group = "androidx.hilt", name = "hilt-common", version.ref = "hiltCommon" }
+androidx-hilt-work = { group = "androidx.hilt", name = "hilt-work", version.ref = "hiltWork" }
+gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
+okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
-
+kapt = {id = "org.jetbrains.kotlin.kapt"}
+hilt-android = { id = "com.google.dagger.hilt.android", version = "2.56.2" }
