@@ -76,7 +76,8 @@ fun CameraPreviewScreen(
             val textToShow = if (cameraPermissionState.status.shouldShowRationale) {
                 "Whoops! Looks like we need your camera to work our magic! " +
                         "Grant us permission and let's get this party started!"
-            } else {
+            }
+            else {
                 "Hi there! We need your camera to work our magic! " +
                         "Grant us permission and let's get this party started! \uD83C\uDF89"
             }
