@@ -20,7 +20,7 @@ fun AppNavGraph(
 ) {
     val activityViewModelStoreOwner =
         checkNotNull(LocalContext.current as? androidx.lifecycle.ViewModelStoreOwner) {
-            "AppNavGraph harus berada dalam konteks ViewModelStoreOwner (misalnya, Activity)."
+            "AppNavGraph harus berada dalam konteks ViewModelStoreOwner"
         }
 
     NavHost(navController = navController, startDestination = startDestination) {
