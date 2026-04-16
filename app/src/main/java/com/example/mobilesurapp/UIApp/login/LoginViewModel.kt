@@ -9,7 +9,7 @@ import kotlinx.coroutines.launch
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import com.example.mobilesurapp.UIApp.login.LoginStateViewModel
-import com.example.mobilesurapp.usecase.LoginUseCase
+import com.example.mobilesurapp.domain.usecase.LoginUseCase
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(

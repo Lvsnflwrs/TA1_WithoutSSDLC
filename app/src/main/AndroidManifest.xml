@@ -28,6 +28,16 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="${applicationId}.androidx-startup"
+            android:exported="false"
+            tools:node="merge">
+            <meta-data
+                android:name="androidx.hilt.work.HiltWorkerFactory"
+                android:value="androidx.hilt.work.HiltWorkerFactory" />
+        </provider>
     </application>
 
 </manifest>

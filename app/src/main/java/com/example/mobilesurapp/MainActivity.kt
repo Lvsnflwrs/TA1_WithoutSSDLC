@@ -4,87 +4,57 @@ import android.Manifest
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.material3.Button
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
-import com.example.mobilesurapp.ui.theme.MobileSurAppTheme
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.isGranted
-import com.google.accompanist.permissions.rememberPermissionState
-import com.google.accompanist.permissions.shouldShowRationale
+import androidx.compose.runtime.*
 import androidx.navigation.compose.rememberNavController
 import com.example.mobilesurapp.navigation.AppNavGraph
 import com.example.mobilesurapp.UIApp.login.LoginStateViewModel
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
 import dagger.hilt.android.AndroidEntryPoint
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
+import java.util.concurrent.TimeUnit
+import com.example.mobilesurapp.background.FaceSyncWorker
 import androidx.activity.viewModels
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    private val loginStateViewModel: LoginStateViewModel by viewModels()
 
+    val loginStateViewModel: LoginStateViewModel by viewModels()
+
+    @OptIn(ExperimentalPermissionsApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContent {
-            MobileSurAppTheme {
-                CameraPreviewScreen(loginStateViewModel = loginStateViewModel)
-            }
-        }
-    }
-}
 
-@OptIn(ExperimentalPermissionsApi::class)
-@Composable
-fun CameraPreviewScreen(
-    modifier: Modifier = Modifier,
-    loginStateViewModel: LoginStateViewModel
-) {
-    val cameraPermissionState = rememberPermissionState(Manifest.permission.CAMERA)
-    val isLoggedIn by loginStateViewModel.isLoggedIn.collectAsState()
+        val syncWorkRequest = PeriodicWorkRequestBuilder<FaceSyncWorker>(
+            15, TimeUnit.SECONDS
+        ).build()
 
-    if (cameraPermissionState.status.isGranted) {
-        val navController = rememberNavController()
-
-        AppNavGraph(
-            navController = navController,
-            loginStateViewModel = loginStateViewModel,
-            startDestination = if (isLoggedIn) "camera" else "login"
+        WorkManager.getInstance(applicationContext).enqueueUniquePeriodicWork(
+            FaceSyncWorker.WORK_NAME,
+            ExistingPeriodicWorkPolicy.KEEP,
+            syncWorkRequest
         )
-    } else {
-        Column(
-            modifier = modifier
-                .fillMaxSize()
-                .wrapContentSize()
-                .padding(24.dp)
-                .widthIn(max = 480.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            val textToShow = if (cameraPermissionState.status.shouldShowRationale) {
-                "Whoops! Looks like we need your camera to work our magic! " +
-                        "Grant us permission and let's get this party started!"
+
+        setContent {
+            val cameraPermissionState =
+                rememberPermissionState(permission = Manifest.permission.CAMERA)
+
+            LaunchedEffect(Unit) {
+                if (!cameraPermissionState.status.isGranted) {
+                    cameraPermissionState.launchPermissionRequest()
+                }
             }
-            else {
-                "Hi there! We need your camera to work our magic! " +
-                        "Grant us permission and let's get this party started! \uD83C\uDF89"
-            }
-            Text(textToShow, textAlign = TextAlign.Center)
-            Spacer(Modifier.height(16.dp))
-            Button(onClick = { cameraPermissionState.launchPermissionRequest() }) {
-                Text("Unleash the Camera!")
+
+            if (cameraPermissionState.status.isGranted) {
+                val navController = rememberNavController()
+                val isLoggedIn by loginStateViewModel.isLoggedIn.collectAsState()
+                AppNavGraph(
+                    navController,
+                    loginStateViewModel,
+                    startDestination = if (isLoggedIn) "camera" else "login")
             }
         }
     }

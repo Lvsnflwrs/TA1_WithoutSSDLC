@@ -69,6 +69,7 @@ dependencies {
 
     implementation(libs.accompanist.permissions)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
+    implementation(libs.androidx.camera.view)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
@@ -85,4 +86,15 @@ dependencies {
     ksp(libs.hilt.compiler)
     implementation(libs.gson)
     implementation(libs.okhttp)
+
+    implementation(libs.tasks.vision)
+    implementation(libs.androidx.media3.common.ktx)
+    implementation(libs.androidx.work.runtime.ktx)
+    implementation(libs.tensorflow.lite)
+    implementation(libs.play.services.mlkit.face.detection)
+
+    implementation(libs.room.runtime)
+    ksp(libs.room.compiler)
+    implementation(libs.room.ktx)
+
 }

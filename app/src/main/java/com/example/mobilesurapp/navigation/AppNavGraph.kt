@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
+import com.example.mobilesurapp.UIApp.addFace.AddFaceScreen
 
 @Composable
 fun AppNavGraph(
@@ -39,7 +40,16 @@ fun AppNavGraph(
                 hiltViewModel<CameraViewModel>(viewModelStoreOwner = activityViewModelStoreOwner)
             CameraScreen(
                 viewModel = cameraViewModel,
+                onNavigateToAddFace = { navController.navigate("addFace") }
             )
         }
+        composable("addFace") {
+            AddFaceScreen(
+                navController = navController,
+                onNavigateToCamera = {navController.navigate("camera")}
+            )
+        }
+
+
     }
 }

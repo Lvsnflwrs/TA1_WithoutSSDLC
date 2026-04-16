@@ -1,4 +1,4 @@
-package com.example.mobilesurapp.usecase
+package com.example.mobilesurapp.domain.usecase
 
 import com.example.mobilesurapp.repository.LoginRepository
 import javax.inject.Inject
