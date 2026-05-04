@@ -47,7 +47,6 @@ class FaceRepositoryImpl @Inject constructor(
         } else {
             val localId = userDao.insertUser(user).toInt()
             pendingSyncDao.insertPendingSync(PendingSyncData(userLocalId = localId, action = "ADD"))
-            Log.d("SendToPending", "Data berhasil disimpan pada pending sync")
             ApiResult.Success(true)
         }
     }

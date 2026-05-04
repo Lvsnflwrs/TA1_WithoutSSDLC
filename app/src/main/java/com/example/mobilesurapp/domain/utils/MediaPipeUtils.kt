@@ -44,8 +44,6 @@ object MediaPipeUtils {
         val imageBytes = out.toByteArray()
         val bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
 
-
-        Log.d("MediaPipeUtils", "toBitmap(): ImageProxy Dims: ${this.width}x${this.height}, Bitmap Dims: ${bitmap?.width}x${bitmap?.height}")
         if (bitmap == null) {
             Log.e("MediaPipeUtils", "toBitmap(): Failed to decode byte array into Bitmap.")
         }
@@ -64,7 +62,7 @@ object MediaPipeUtils {
 
         try {
             yuvConverter.yuvToRgb(image, outputBitmap)
-            Log.d("MediaPipeUtils", "toBitmap (with converter): ImageProxy Dims: ${this.width}x${this.height}, Bitmap Dims: ${outputBitmap.width}x${outputBitmap.height}")
+
             if (outputBitmap.width <= 1 || outputBitmap.height <= 1) {
                 Log.e("MediaPipeUtils", "Bitmap size too small: ${outputBitmap.width}x${outputBitmap.height}")
                 return null

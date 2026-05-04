@@ -158,8 +158,6 @@ class AddFaceViewModel @Inject constructor(
         capturedFrames.clear()
         _message.value = "Merekam wajah, mohon tetap di tengah dan sedikit gerakkan kepala secara perlahan!"
         lastFrameCaptureTime = System.currentTimeMillis()
-        Log.d(TAG, "Recording started for ${RECORD_DURATION_MILLIS / 1000} seconds.")
-
 
         recordingJob = viewModelScope.launch(Dispatchers.Default) {
             val startTime = System.currentTimeMillis()
@@ -185,7 +183,6 @@ class AddFaceViewModel @Inject constructor(
     fun updateImageDimensions(width: Int, height: Int) {
         if (width > 1 && height > 1 && _imageDimensions.value.width != width || _imageDimensions.value.height != height) {
             _imageDimensions.value = Size(width, height)
-            Log.d("AddFaceViewModel", "Updated image dimensions to: ${width}x${height}")
         }
     }
 
