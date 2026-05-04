@@ -54,7 +54,6 @@ class LoginRepositoryImpl @Inject constructor(
             val token = jsonResponse.optString("token")
 
             if (success && token.isNotEmpty()) {
-                Log.d(TAG, "Login successful, token received.")
                 Result.success(token)
             } else {
                 Log.d(TAG, "Login failed: $message")

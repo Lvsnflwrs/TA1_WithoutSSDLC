@@ -12,6 +12,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import com.example.mobilesurapp.UIApp.addFace.AddFaceScreen
+import com.example.mobilesurapp.UIApp.login.BiometricLoginScreen
 
 @Composable
 fun AppNavGraph(
@@ -32,6 +33,9 @@ fun AppNavGraph(
                     navController.navigate("camera") {
                         popUpTo("login") { inclusive = true }
                     }
+                },
+                onNavigateToBiomtericLogin = {
+                    navController.navigate("BiometricLogin")
                 }
             )
         }
@@ -40,7 +44,6 @@ fun AppNavGraph(
                 hiltViewModel<CameraViewModel>(viewModelStoreOwner = activityViewModelStoreOwner)
             CameraScreen(
                 viewModel = cameraViewModel,
-                onNavigateToAddFace = { navController.navigate("addFace") }
             )
         }
         composable("addFace") {
@@ -50,6 +53,18 @@ fun AppNavGraph(
             )
         }
 
+        composable("BiometricLogin"){
+            BiometricLoginScreen(
+                onLoginSuccess = {
+                    loginStateViewModel.login()
+                    navController.navigate("camera") {
+                        popUpTo("login") { inclusive = true }
+                    }
+                },
+                onNavigateToAddFace = { navController.navigate("addFace") },
 
+                onNavigateBack = { navController.navigate("camera")}
+            )
+        }
     }
 }

@@ -50,7 +50,6 @@ class LoginViewModel @Inject constructor(
             _loginError.value = null
             _jwtToken.value = null
 
-            Log.d("LoginViewModel", "Attempting login for email: ${_email.value}")
 
             val result = loginUseCase.execute(_email.value, _password.value)
 
@@ -62,7 +61,6 @@ class LoginViewModel @Inject constructor(
                 loginStateViewModel.setLoggedInAdmin(adminId)
 
                 onSuccess()
-                Log.d("LoginViewModel", "Login successful. JWT Token: $token")
             }.onFailure { exception ->
                 _loginError.value = exception.message ?: "Login gagal"
                 Log.e("LoginViewModel", "Login failed: ${_loginError.value}")
