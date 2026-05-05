@@ -13,6 +13,10 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import com.example.mobilesurapp.UIApp.addFace.AddFaceScreen
 import com.example.mobilesurapp.UIApp.login.BiometricLoginScreen
+import com.example.mobilesurapp.UIApp.login.ReAuthScreen
+import com.example.mobilesurapp.UIApp.profile.ProfileScreen
+import androidx.navigation.navArgument
+import androidx.navigation.NavType
 
 @Composable
 fun AppNavGraph(
@@ -28,8 +32,10 @@ fun AppNavGraph(
     NavHost(navController = navController, startDestination = startDestination) {
         composable("login") {
             LoginScreen(
-                onLoginSuccess = {
-                    loginStateViewModel.login()
+                onLoginSuccess = { adminId ->
+
+                    loginStateViewModel.setLoggedInAdmin(adminId)
+
                     navController.navigate("camera") {
                         popUpTo("login") { inclusive = true }
                     }
@@ -44,6 +50,7 @@ fun AppNavGraph(
                 hiltViewModel<CameraViewModel>(viewModelStoreOwner = activityViewModelStoreOwner)
             CameraScreen(
                 viewModel = cameraViewModel,
+                onNavigateToProfile = {navController.navigate("profile")}
             )
         }
         composable("addFace") {
@@ -53,17 +60,64 @@ fun AppNavGraph(
             )
         }
 
+        composable("profile") {
+            ProfileScreen(
+                navController = navController,
+                loginStateViewModel = loginStateViewModel
+            )
+        }
+
+        composable(
+            route = "reauth/{targetDestination}",
+            arguments = listOf(
+                navArgument("targetDestination") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val targetDestination = backStackEntry.arguments?.getString("targetDestination") ?: "camera"
+
+            ReAuthScreen(
+                onLoginSuccess = { adminId ->
+                    loginStateViewModel.setLoggedInAdmin(adminId)
+
+                    navController.navigate(targetDestination) {
+                        popUpTo("reauth/$targetDestination") { inclusive = true }
+                    }
+                },
+                onNavigateBack = {
+                    navController.popBackStack()
+                }
+            )
+        }
+
+//        composable("reauth/{targetDestination}") { backStackEntry ->
+//            val targetDestination = backStackEntry.arguments?.getString("targetDestination") ?: "camera"
+//
+//            ReAuthScreen(
+//                onLoginSuccess = { adminId ->
+//                    loginStateViewModel.setLoggedInAdmin(adminId)
+//                    navController.navigate("addFace") {
+//                        popUpTo("reauth/{targetDestination}") { inclusive = true }
+//                    }
+//                },
+//                onNavigateBack = {
+//                    navController.popBackStack()
+//                }
+//            )
+//        }
+
         composable("BiometricLogin"){
             BiometricLoginScreen(
-                onLoginSuccess = {
-                    loginStateViewModel.login()
+                onLoginSuccess = { adminId ->
+
+                    loginStateViewModel.setLoggedInAdmin(adminId)
+
                     navController.navigate("camera") {
                         popUpTo("login") { inclusive = true }
                     }
                 },
-                onNavigateToAddFace = { navController.navigate("addFace") },
+                onNavigateToAddFace = { navController.navigate("reauth/addFace") },
 
-                onNavigateBack = { navController.navigate("camera")}
+                onNavigateBack = { navController.popBackStack()}
             )
         }
     }

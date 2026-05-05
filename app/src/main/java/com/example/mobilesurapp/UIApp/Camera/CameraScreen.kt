@@ -30,26 +30,19 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.core.content.ContextCompat
-import com.example.mobilesurapp.UIApp.components.FaceOverlay
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.hilt.navigation.compose.hiltViewModel
-import kotlinx.coroutines.launch
-import android.net.Uri
 import androidx.annotation.OptIn
 import androidx.camera.core.ExperimentalGetImage
-import com.example.mobilesurapp.domain.utils.MediaPipeUtils.toBitmapWithoutConverter
-import com.example.mobilesurapp.face.FaceUtils
-import com.example.mobilesurapp.UIApp.components.BottomNavBar
+import androidx.compose.foundation.layout.Row
+import androidx.compose.material.icons.filled.Person
 
 @OptIn(ExperimentalGetImage::class)
 @Composable
 fun CameraScreen(
     viewModel: CameraViewModel = hiltViewModel(),
+    onNavigateToProfile: () -> Unit
 ) {
     val context = LocalContext.current
     val lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
@@ -116,6 +109,20 @@ fun CameraScreen(
                     Icon(
                         imageVector = Icons.Default.Cameraswitch,
                         contentDescription = "Switch Camera"
+                    )
+                }
+
+                IconButton(
+                    onClick = { onNavigateToProfile() },
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(16.dp)
+                        .size(48.dp)
+                        .background(MaterialTheme.colorScheme.surface, shape = RoundedCornerShape(12.dp))
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Person,
+                        contentDescription = "Profile"
                     )
                 }
             }

@@ -3,6 +3,7 @@ package com.example.mobilesurapp.UIApp.login
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -17,15 +18,16 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.launch
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Cameraswitch
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.ui.text.input.VisualTransformation
 
 @Composable
-fun LoginScreen(
+fun ReAuthScreen(
     viewModel: LoginViewModel = hiltViewModel(),
     onLoginSuccess: (String) -> Unit,
-    onNavigateToBiomtericLogin: () -> Unit
+    onNavigateBack: () -> Unit
 ) {
     val email by viewModel.email.collectAsState()
     val password by viewModel.password.collectAsState()
@@ -61,8 +63,9 @@ fun LoginScreen(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+
             Text(
-                text = "Login Page",
+                text = "Silahkan Autentikasi Ulang",
                 fontSize = 30.sp,
                 fontWeight = FontWeight.Bold,
                 color = textColor,
@@ -118,12 +121,12 @@ fun LoginScreen(
             Spacer(modifier = Modifier.height(20.dp))
 
             Button(
-                onClick = { onNavigateToBiomtericLogin() },
+                onClick = { onNavigateBack() },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp)
             ) {
-                Text("Biometrik Login")
+                Text("Kembali")
             }
         }
     }

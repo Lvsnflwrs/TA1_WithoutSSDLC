@@ -56,7 +56,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 @Composable
 fun BiometricLoginScreen(
     viewModel: CameraViewModel = hiltViewModel(),
-    onLoginSuccess: () -> Unit,
+    onLoginSuccess: (String) -> Unit,
     onNavigateToAddFace: () -> Unit,
     onNavigateBack: () -> Unit
 ) {
@@ -89,8 +89,9 @@ fun BiometricLoginScreen(
         verificationResult?.let { result ->
             if (result.isMatch) {
                 val userName = result.matchedUser?.name ?: "Pengguna"
+                val adminId = result.matchedUser?.userId?.toString() ?: ""
                 Toast.makeText(context, "Verifikasi Berhasil. Selamat datang, $userName!", Toast.LENGTH_SHORT).show()
-                onLoginSuccess()
+                onLoginSuccess(adminId)
             } else if (result.distance != -1.0f) {
                 Toast.makeText(context, "Login Gagal", Toast.LENGTH_SHORT).show()
             }

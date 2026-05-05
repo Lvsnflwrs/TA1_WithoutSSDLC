@@ -12,7 +12,8 @@ class LoginStateViewModel : ViewModel() {
     private val _isLoggedIn = MutableStateFlow(false)
     val isLoggedIn: StateFlow<Boolean> = _isLoggedIn.asStateFlow()
 
-    fun login() {
+    fun login(adminId: String) {
+        _currentAdminId.value = adminId
         _isLoggedIn.value = true
     }
 

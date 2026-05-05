@@ -44,23 +44,21 @@ class LoginViewModel @Inject constructor(
         _loginError.value = null
     }
 
-    fun login(onSuccess: () -> Unit) {
+    fun login(onSuccess: (String) -> Unit) {
         viewModelScope.launch {
             _isLoggingIn.value = true
             _loginError.value = null
             _jwtToken.value = null
 
-
             val result = loginUseCase.execute(_email.value, _password.value)
 
-            result.onSuccess { token ->
-                _jwtToken.value = token
+            result.onSuccess { data ->
+                val tokenStr = data.first
+                val adminId = data.second
 
-                val adminId = _id.value
+                _jwtToken.value = tokenStr
 
-                loginStateViewModel.setLoggedInAdmin(adminId)
-
-                onSuccess()
+                onSuccess(adminId)
             }.onFailure { exception ->
                 _loginError.value = exception.message ?: "Login gagal"
                 Log.e("LoginViewModel", "Login failed: ${_loginError.value}")

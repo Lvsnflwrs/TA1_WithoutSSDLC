@@ -2,25 +2,36 @@ package com.example.mobilesurapp.di
 
 import android.content.Context
 import androidx.room.Room
+import okhttp3.OkHttpClient
+import com.google.gson.Gson
+
 import com.example.mobilesurapp.UIApp.login.LoginStateViewModel
 import com.example.mobilesurapp.api.WebSocketClient
+
 import com.example.mobilesurapp.database.AppDatabase
 import com.example.mobilesurapp.database.dao.PendingSyncDao
 import com.example.mobilesurapp.database.dao.UserDao
+
 import com.example.mobilesurapp.repository.LoginRepositoryImpl
 import com.example.mobilesurapp.repository.LoginRepository
+
 import com.example.mobilesurapp.domain.usecase.LoginUseCase
 import com.example.mobilesurapp.domain.usecase.RegisterUserWithFaceUseCase
 import com.example.mobilesurapp.domain.usecase.SyncOfflineFacesUseCase
 import com.example.mobilesurapp.domain.usecase.VerifyFaceUseCase
+import com.example.mobilesurapp.domain.usecase.GetUserProfileUseCase
 import com.example.mobilesurapp.domain.utils.NetworkUtils
+
 import com.example.mobilesurapp.face.FaceEmbedder
 import com.example.mobilesurapp.face.FaceNetModel
+
 import com.example.mobilesurapp.modelload.AddFaceDetector
+
 import com.example.mobilesurapp.repository.FaceRepository
 import com.example.mobilesurapp.repository.FaceRepositoryImpl
-import okhttp3.OkHttpClient
-import com.google.gson.Gson
+import com.example.mobilesurapp.repository.UserProfileRepository
+import com.example.mobilesurapp.repository.UserProfileRepositoryImpl
+
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -148,6 +159,18 @@ object AppModule {
         return SyncOfflineFacesUseCase(faceRepository, webSocketClient, networkUtils)
     }
 
+    @Provides
+    @Singleton
+    fun provideUserProfileRepository(
+        webSocketClient: WebSocketClient
+    ): UserProfileRepository {
+        return UserProfileRepositoryImpl(webSocketClient)
+    }
 
+    @Provides
+    @Singleton
+    fun provideGetUserProfileUseCase(repository: UserProfileRepository): GetUserProfileUseCase {
+        return GetUserProfileUseCase(repository)
+    }
 
 }

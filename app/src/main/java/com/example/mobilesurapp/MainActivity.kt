@@ -50,11 +50,15 @@ class MainActivity : ComponentActivity() {
 
             if (cameraPermissionState.status.isGranted) {
                 val navController = rememberNavController()
-                val isLoggedIn by loginStateViewModel.isLoggedIn.collectAsState()
+                val initialStartDestination = remember {
+                    if (loginStateViewModel.isLoggedIn.value) "camera" else "login"
+                }
+
                 AppNavGraph(
-                    navController,
-                    loginStateViewModel,
-                    startDestination = if (isLoggedIn) "camera" else "login")
+                    navController = navController,
+                    loginStateViewModel = loginStateViewModel,
+                    startDestination = initialStartDestination
+                )
             }
         }
     }
