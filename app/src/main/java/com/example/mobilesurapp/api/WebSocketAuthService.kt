@@ -59,7 +59,7 @@ class WebSocketAuthService @Inject constructor() {
                                 onAuthResult?.invoke(false, message)
                             }
                         }
-                        "profile_data" -> { // New: Handle profile data response
+                        "profile_data" -> {
                             val success = jsonResponse.optBoolean("success")
                             if (success) {
                                 val data = jsonResponse.optJSONObject("data")
@@ -78,7 +78,7 @@ class WebSocketAuthService @Inject constructor() {
                                 onProfileReceived?.invoke(null, jsonResponse.optString("message"))
                             }
                         }
-                        "profile_update" -> { // New: Handle profile update response
+                        "profile_update" -> {
                             val success = jsonResponse.optBoolean("success")
                             val message = jsonResponse.optString("message")
                             onProfileUpdateResult?.invoke(success, message)

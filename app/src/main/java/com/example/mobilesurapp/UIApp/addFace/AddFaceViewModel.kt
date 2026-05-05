@@ -98,7 +98,6 @@ class AddFaceViewModel @Inject constructor(
             onResult = { result ->
                 _isFaceDetected.value = result.detections().isNotEmpty()
                 _liveDetectionResult.value = result
-//                Log.d(TAG, "Live face detected: ${_isFaceDetected.value}")
             },
             onError = { error ->
                 Log.e(TAG, "Live Face Detector error: ${error.message}")
@@ -186,26 +185,22 @@ class AddFaceViewModel @Inject constructor(
         }
     }
 
-
-
     @ExperimentalGetImage
     fun processFrame(imageProxy: ImageProxy) {
         val rotationDegrees = imageProxy.imageInfo.rotationDegrees
-
         try {
             if (imageProxy.image == null) {
                 Log.w(TAG, "ImageProxy.image is null in processFrame. Skipping frame.")
-                return // Jangan close imageProxy di sini, biarkan finally yang menangani
+                return
             }
 
             var bitmap = imageProxy.toBitmapWithoutConverter()
 
             if (bitmap == null || bitmap.isRecycled) {
                 Log.e(TAG, "Failed to convert ImageProxy to Bitmap or bitmap is recycled.")
-                return // Jangan close imageProxy di sini
+                return
             }
 
-            // Lakukan rotasi dan flip yang diperlukan untuk tampilan live dan deteksi
             var processedBitmap = bitmap
             if (rotationDegrees != 0) {
                 val matrix = Matrix()
@@ -239,26 +234,22 @@ class AddFaceViewModel @Inject constructor(
                 processedBitmap = flippedBitmap
             }
 
-            // Lakukan live detection
-            liveFaceDetector?.detect(processedBitmap) // Ini akan mengupdate _isFaceDetected dan _liveDetectionResult
+            liveFaceDetector?.detect(processedBitmap)
 
-            // Cek apakah sedang dalam status RECORDING untuk menambahkan ke buffer
             if (_recordingState.value == RecordingState.RECORDING) {
                 val currentTime = System.currentTimeMillis()
                 if (currentTime - lastFrameCaptureTime >= FRAME_CAPTURE_INTERVAL_MILLIS) {
                     lastFrameCaptureTime = currentTime
-                    // Tambahkan bitmap yang sudah diproses ( rotated/flipped ) ke buffer
                     if (processedBitmap != null && !processedBitmap.isRecycled) {
-                        capturedFrames.add(processedBitmap) // Tambahkan bitmap ini ke buffer
-                        Log.d(TAG, "Frame captured and added to buffer. Buffer size: ${capturedFrames.size}. Bitmap Dims: ${processedBitmap.width}x${processedBitmap.height} (After orientation correction)")
+                        capturedFrames.add(processedBitmap)
                     } else {
                         Log.e(TAG, "Processed bitmap is null or recycled. Not adding to buffer.")
                     }
                 } else {
-                    processedBitmap.recycle() // Daur ulang jika tidak ditambahkan ke buffer
+                    processedBitmap.recycle()
                 }
             } else {
-                processedBitmap.recycle() // Daur ulang jika tidak sedang merekam
+                processedBitmap.recycle()
             }
 
         } catch (e: Exception) {
@@ -292,13 +283,11 @@ class AddFaceViewModel @Inject constructor(
                 _message.value = "Memproses frame ${frameIndex}/${totalFrames}..."
                 Log.d(TAG, "Processing frame ${frameIndex}/${totalFrames}. Original Bitmap Dims: ${bitmap.width}x${bitmap.height}")
 
-                // Debugging: Simpan bitmap sebelum deteksi wajah
                 try {
                     val debugFileName = "processed_frame_${frameIndex}_${System.currentTimeMillis()}.jpg"
                     val file = File(getApplication<Application>().getExternalFilesDir(null), debugFileName)
                     FileOutputStream(file).use { out ->
                         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out)
-                        Log.d(TAG, "Saved debug bitmap BEFORE face detection: ${file.absolutePath}")
                     }
                 } catch (e: Exception) {
                     Log.e(TAG, "Error saving debug bitmap BEFORE face detection: ${e.message}")
@@ -313,8 +302,8 @@ class AddFaceViewModel @Inject constructor(
 
                 if (detectionResult == null || detectionResult.detections().isEmpty()) {
                     Log.w(TAG, "No detection result or no faces detected in frame ${frameIndex}.")
-                    bitmap.recycle() // Daur ulang bitmap ini karena tidak digunakan lebih lanjut
-                    iterator.remove() // Hapus dari daftar jika tidak ada deteksi
+                    bitmap.recycle()
+                    iterator.remove()
                     continue
                 }
 
@@ -337,16 +326,15 @@ class AddFaceViewModel @Inject constructor(
                         croppedFace = ImageCropper.cropBitmap(bitmap, expandedFaceBox)
                     } catch (e: Exception) {
                         Log.e(TAG, "Error cropping bitmap for frame ${frameIndex}: ${e.message}", e)
-                        // Pastikan bitmap asli didaur ulang meskipun cropping gagal
                         bitmap.recycle()
                         iterator.remove()
-                        return@let // Keluar dari block let
+                        return@let
                     }
 
                     if (croppedFace == null || croppedFace.isRecycled) {
                         Log.e(TAG, "Cropped bitmap is null or recycled for frame ${frameIndex}.")
-                        bitmap.recycle() // Daur ulang bitmap asli
-                        croppedFace?.recycle() // Pastikan croppedFace didaur ulang jika ada
+                        bitmap.recycle()
+                        croppedFace?.recycle()
                         iterator.remove()
                         return@let
                     }
@@ -357,19 +345,18 @@ class AddFaceViewModel @Inject constructor(
                         resizedFace = croppedFace.resizeBitmap(TARGET_FACE_SIZE, TARGET_FACE_SIZE)
                     } catch (e: Exception) {
                         Log.e(TAG, "Error resizing bitmap for frame ${frameIndex}: ${e.message}", e)
-                        // Daur ulang bitmap yang sudah tidak digunakan
                         croppedFace.recycle()
                         bitmap.recycle()
                         iterator.remove()
                         return@let
                     } finally {
-                        croppedFace.recycle() // Daur ulang croppedFace setelah resize
+                        croppedFace.recycle()
                     }
 
                     if (resizedFace == null || resizedFace.isRecycled) {
                         Log.e(TAG, "Resized bitmap is null or recycled for frame ${frameIndex}.")
-                        resizedFace?.recycle() // Pastikan resizedFace didaur ulang jika ada
-                        bitmap.recycle() // Daur ulang bitmap asli
+                        resizedFace?.recycle()
+                        bitmap.recycle()
                         iterator.remove()
                         return@let
                     }
@@ -381,30 +368,29 @@ class AddFaceViewModel @Inject constructor(
                         Log.e(TAG, "Error getting embeddings for frame ${frameIndex}: ${e.message}", e)
                         null
                     } finally {
-                        resizedFace.recycle() // Daur ulang resizedFace setelah embedding
+                        resizedFace.recycle()
                     }
 
                     if (embedding != null) {
                         allEmbeddings.add(embedding)
-                        Log.d(TAG, "Embedding successfully generated for frame ${frameIndex}. Embedding size: ${embedding.size}")
                     } else {
                         Log.w(TAG, "Embedding is null for frame ${frameIndex}.")
                     }
                     processedFramesForEmbeddingCount++
-                    bitmap.recycle() // Daur ulang bitmap asli setelah semua proses berhasil
-                    iterator.remove() // Hapus dari daftar
-                } ?: run { // Jika firstOrNull() menghasilkan null
-                    bitmap.recycle() // Daur ulang bitmap asli
-                    iterator.remove() // Hapus dari daftar
+                    bitmap.recycle()
+                    iterator.remove()
+                } ?: run {
+                    bitmap.recycle()
+                    iterator.remove()
                 }
             }
-            capturedFrames.clear() // Pastikan list benar-benar kosong
+            capturedFrames.clear()
             Log.d(TAG, "Finished processing all frames. Total faces detected: $facesDetectedCount. Total frames processed for embedding: $processedFramesForEmbeddingCount.")
         }
 
         if (allEmbeddings.isNotEmpty()) {
             val averagedEmbedding = averageEmbeddings(allEmbeddings)
-            Log.d(TAG, "Averaged embedding calculated. Size: ${averagedEmbedding.size}")
+            Log.d(TAG, "Averaged embedding calculated.")
             val user = User(
                 name = name.value,
                 email = email.value,

@@ -17,7 +17,7 @@ class LoginRepositoryImpl @Inject constructor(
 
     private val WEBSOCKET_URL = "ws://192.168.100.47:3000"
 
-    override suspend fun loginUser(email: String, password: String): Result<String> {
+    override suspend fun loginUser(email: String, password: String): Result<Pair<String, String>> {
         Log.d(TAG, "Attempting to login user: $email")
 
         webSocketClient.connect(WEBSOCKET_URL)
@@ -53,8 +53,10 @@ class LoginRepositoryImpl @Inject constructor(
             val message = jsonResponse.optString("message")
             val token = jsonResponse.optString("token")
 
+            val adminId = jsonResponse.optString("adminId")
+
             if (success && token.isNotEmpty()) {
-                Result.success(token)
+                Result.success(Pair(token, adminId))
             } else {
                 Log.d(TAG, "Login failed: $message")
                 Result.failure(RuntimeException(message.ifEmpty { "Login failed: Unknown error" }))

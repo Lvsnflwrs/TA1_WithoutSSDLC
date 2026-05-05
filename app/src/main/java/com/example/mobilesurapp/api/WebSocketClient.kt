@@ -270,6 +270,24 @@ class WebSocketClient @Inject constructor(
         }
     }
 
+    suspend fun requestProfile(adminId: String) {
+        val message = JSONObject().apply {
+            put("type", "GET_PROFILE_REQUEST")
+            put("adminId", adminId)
+        }.toString()
+        send(message)
+    }
+
+    suspend fun updateProfile(adminId: String, username: String, email: String) {
+        val message = JSONObject().apply {
+            put("type", "UPDATE_PROFILE_REQUEST")
+            put("adminId", adminId)
+            put("username", username)
+            put("email", email)
+        }.toString()
+        send(message)
+    }
+
     fun disconnect() {
         webSocket?.close(1000, "Disconnected by client")
         webSocket = null
