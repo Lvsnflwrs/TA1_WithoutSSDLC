@@ -44,6 +44,8 @@ class AddFaceViewModel @Inject constructor(
     val name = mutableStateOf("")
     val email = mutableStateOf("")
     val phone = mutableStateOf("")
+    private var currentAdminId: String = ""
+    val role = mutableStateOf("")
 
     private val _lensFacing = MutableStateFlow(CameraSelector.LENS_FACING_FRONT)
     val lensFacing: StateFlow<Int> = _lensFacing
@@ -83,7 +85,6 @@ class AddFaceViewModel @Inject constructor(
     private val _phoneError = MutableStateFlow<String?>(null)
     val phoneError: StateFlow<String?> = _phoneError
 
-
     companion object {
         private const val RECORD_DURATION_MILLIS = 5000L
         private const val FRAME_CAPTURE_INTERVAL_MILLIS = 500L
@@ -122,12 +123,13 @@ class AddFaceViewModel @Inject constructor(
         return phone.value.isNotEmpty() && phone.value.length in 13..14
     }
 
-    fun startRecording(userName: String, userEmail: String, userPhone: String) {
+    fun startRecording(adminId: String, userName: String, userEmail: String, userPhone: String) {
         if (_recordingState.value != RecordingState.IDLE) {
             Log.w(TAG, "Already recording or processing. Ignoring startRecording call.")
             return
         }
 
+        currentAdminId = adminId
         name.value = userName
         email.value = userEmail
         phone.value = userPhone
@@ -391,15 +393,18 @@ class AddFaceViewModel @Inject constructor(
         if (allEmbeddings.isNotEmpty()) {
             val averagedEmbedding = averageEmbeddings(allEmbeddings)
             Log.d(TAG, "Averaged embedding calculated.")
+            Log.d("BioProfile", "Mencoba menyimpan wajah. Admin ID dari UI: $currentAdminId")
             val user = User(
+                adminId = currentAdminId.toIntOrNull(),
                 name = name.value,
                 email = email.value,
                 phone = phone.value,
-                embeddings = averagedEmbedding
+                embeddings = averagedEmbedding,
+                role = "admin"
             )
             Log.d(TAG, "Attempting to register user with averaged embedding.")
-
-            when (val result = registerUserWithFaceUseCase(user.name, user.email, user.phone, user.embeddings)) {
+            Log.d("BioProfile", "Data User yang akan di-insert: $user")
+            when (val result = registerUserWithFaceUseCase(user.adminId, user.name, user.email, user.phone, user.embeddings, user.role)) {
                 is ApiResult.Success -> {
                     if (result.data) {
                         _message.value = "Wajah berhasil disimpan!"
@@ -446,6 +451,7 @@ class AddFaceViewModel @Inject constructor(
         _recordingState.value = RecordingState.IDLE
         _recordingProgress.value = 0f
         _message.value = null
+        currentAdminId = ""
         name.value = ""
         email.value = ""
         phone.value = ""

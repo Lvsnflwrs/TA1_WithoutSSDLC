@@ -53,10 +53,12 @@ fun AppNavGraph(
                 onNavigateToProfile = {navController.navigate("profile")}
             )
         }
+
         composable("addFace") {
             AddFaceScreen(
                 navController = navController,
-                onNavigateToCamera = {navController.navigate("camera")}
+                loginStateViewModel = loginStateViewModel,
+                onNavigateToCamera = {navController.navigate("login")}
             )
         }
 
@@ -88,22 +90,6 @@ fun AppNavGraph(
                 }
             )
         }
-
-//        composable("reauth/{targetDestination}") { backStackEntry ->
-//            val targetDestination = backStackEntry.arguments?.getString("targetDestination") ?: "camera"
-//
-//            ReAuthScreen(
-//                onLoginSuccess = { adminId ->
-//                    loginStateViewModel.setLoggedInAdmin(adminId)
-//                    navController.navigate("addFace") {
-//                        popUpTo("reauth/{targetDestination}") { inclusive = true }
-//                    }
-//                },
-//                onNavigateBack = {
-//                    navController.popBackStack()
-//                }
-//            )
-//        }
 
         composable("BiometricLogin"){
             BiometricLoginScreen(

@@ -12,6 +12,12 @@ interface UserDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertUser(user: User): Long
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertUsers(users: List<User>)
+
+    @Query("DELETE FROM users WHERE userId IS NOT NULL")
+    suspend fun clearOnlineUsers()
+
     @Query("SELECT * FROM users WHERE localId = :localId")
     fun getUserByLocalId(localId: Int): Flow<User?>
 
