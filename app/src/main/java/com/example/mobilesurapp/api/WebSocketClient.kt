@@ -209,14 +209,30 @@ class WebSocketClient @Inject constructor(
         )
         val jsonMessage = gson.toJson(message)
         Log.d(TAG, "Sending verification request: $jsonMessage")
+
         if (send(jsonMessage)) {
             val responseText = incomingMessages.collectUntilResponse("recognize_face")
+            Log.d("BioProfile", "Raw JSON dari Server: $responseText")
             return try {
                 val responseMap = gson.fromJson(responseText, Map::class.java)
                 val isMatch = responseMap["match"] as? Boolean ?: false
                 val name = responseMap["name"] as? String
                 val distance = (responseMap["distance"] as? Double)?.toFloat() ?: -1.0f
-                val matchedUser = if (isMatch && name != null) User(name = name, email = "", phone = "", embeddings = floatArrayOf()) else null
+                val rawAdminId = responseMap["adminId"]
+                val adminIdFromServer = rawAdminId?.toString()?.toDoubleOrNull()?.toInt()
+
+                val matchedUser = if (isMatch && name != null) {
+                    User(
+                        adminId = adminIdFromServer,
+                        userId = null,
+                        name = name,
+                        email = "",
+                        phone = "",
+                        embeddings = floatArrayOf()
+                    )
+                } else {
+                    null
+                }
                 ApiResult.Success(FaceVerificationResult(isMatch, matchedUser, distance))
             } catch (e: JsonSyntaxException) {
                 ApiResult.Error(e, "Invalid JSON response for face verification.")
@@ -231,10 +247,12 @@ class WebSocketClient @Inject constructor(
     suspend fun sendInsertFaceRequest(user: User): ApiResult<Boolean> {
         val message = mapOf(
             "type" to "insert_face",
+            "adminId" to user.adminId,
             "name" to user.name,
             "email" to user.email,
             "phone" to user.phone,
-            "embeddings" to user.embeddings.map { it.toDouble() }
+            "embeddings" to user.embeddings.map { it.toDouble() },
+            "role" to user.role
         )
         val jsonMessage = gson.toJson(message)
         Log.d(TAG, "Sending insert face request: $jsonMessage")

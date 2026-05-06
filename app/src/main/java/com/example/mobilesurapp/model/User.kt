@@ -1,20 +1,31 @@
 package com.example.mobilesurapp.model
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.google.gson.annotations.SerializedName
 import java.util.UUID
 
-@Entity(tableName = "users")
+@Entity(
+    tableName = "users",
+    indices = [androidx.room.Index(value = ["email"], unique = true)]
+)
 data class User(
     @PrimaryKey(autoGenerate = true)
     val localId: Int = 0,
 
+    @SerializedName("user_id")
     val userId: Int? = null,
+
+    @SerializedName("admin_id")
+    @ColumnInfo(name = "admin_id")
+    val adminId: Int? = null,
+
     val name: String,
     val email: String,
     val phone: String,
     val embeddings: FloatArray,
-    val role: String = "user"
+    val role: String = "admin"
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -24,6 +35,7 @@ data class User(
 
         if (localId != other.localId) return false
         if (userId != other.userId) return false
+        if (adminId != other.adminId) return false
         if (name != other.name) return false
         if (email != other.email) return false
         if (phone != other.phone) return false

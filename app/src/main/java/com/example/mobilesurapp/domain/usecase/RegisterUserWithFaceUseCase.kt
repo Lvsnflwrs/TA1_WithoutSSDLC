@@ -8,8 +8,8 @@ import com.example.mobilesurapp.repository.FaceRepository
 class RegisterUserWithFaceUseCase @Inject constructor(
     private val faceRepository: FaceRepository
 ) {
-    suspend operator fun invoke(name: String, email: String, phone: String, embeddings: FloatArray): ApiResult<Boolean> {
-        val user = User(name = name, email = email, phone = phone, embeddings = embeddings)
+    suspend operator fun invoke(adminId: Int?, name: String, email: String, phone: String, embeddings: FloatArray, role: String): ApiResult<Boolean> {
+        val user = User(userId = null, adminId = adminId, name = name, email = email, phone = phone, embeddings = embeddings, role = role)
         return faceRepository.registerUserWithFace(user)
     }
 }

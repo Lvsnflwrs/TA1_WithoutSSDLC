@@ -29,6 +29,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.mobilesurapp.UIApp.components.FaceOverlay
+import com.example.mobilesurapp.UIApp.login.LoginStateViewModel
 import kotlinx.coroutines.launch
 import java.util.concurrent.Executors
 
@@ -36,6 +37,7 @@ import java.util.concurrent.Executors
 @Composable
 fun AddFaceScreen(
     navController: NavController,
+    loginStateViewModel: LoginStateViewModel,
     viewModel: AddFaceViewModel = hiltViewModel(),
     onNavigateToCamera: () -> Unit
 ) {
@@ -56,6 +58,7 @@ fun AddFaceScreen(
     val imageDimensions by viewModel.imageDimensions.collectAsState()
     val detectionResult by viewModel.liveDetectionResult.collectAsState()
 
+    val currentAdminId by loginStateViewModel.currentAdminId.collectAsState()
     var userNameInput by remember { mutableStateOf(viewModel.name.value) }
     var userEmailInput by remember { mutableStateOf(viewModel.email.value) }
     var userPhoneInput by remember { mutableStateOf(viewModel.phone.value) }
@@ -300,7 +303,8 @@ fun AddFaceScreen(
                     OutlinedButton(
                         onClick = {
                             if (userNameInput.isNotBlank() && userEmailInput.isNotBlank() && userPhoneInput.isNotBlank()) {
-                                viewModel.startRecording(userNameInput, userEmailInput, userPhoneInput)
+                                val adminIdToSave = currentAdminId ?: ""
+                                viewModel.startRecording(adminIdToSave, userNameInput, userEmailInput, userPhoneInput)
                             } else {
                                 coroutineScope.launch {
                                     if (snackbarHostState.currentSnackbarData == null) {
