@@ -20,6 +20,7 @@ import com.example.mobilesurapp.domain.usecase.RegisterUserWithFaceUseCase
 import com.example.mobilesurapp.domain.usecase.SyncOfflineFacesUseCase
 import com.example.mobilesurapp.domain.usecase.VerifyFaceUseCase
 import com.example.mobilesurapp.domain.usecase.GetUserProfileUseCase
+import com.example.mobilesurapp.domain.usecase.UpdateUserProfileUseCase
 import com.example.mobilesurapp.domain.utils.NetworkUtils
 
 import com.example.mobilesurapp.face.FaceEmbedder
@@ -171,6 +172,12 @@ object AppModule {
     @Singleton
     fun provideGetUserProfileUseCase(repository: UserProfileRepository): GetUserProfileUseCase {
         return GetUserProfileUseCase(repository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideUpdateUserProfileUseCase(repository: UserProfileRepository): UpdateUserProfileUseCase {
+        return UpdateUserProfileUseCase(repository)
     }
 
 }

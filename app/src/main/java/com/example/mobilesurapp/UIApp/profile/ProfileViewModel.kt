@@ -36,21 +36,16 @@ class ProfileViewModel @Inject constructor(
 
     private fun fetchProfile() {
         currentAdminId?.let { id ->
-            Log.d("ProfileDebug", "Mulai fetchProfile untuk ID: $id")
             _loading.value = true
             _error.value = null
             viewModelScope.launch {
-                Log.d("ProfileDebug", "Menunggu balasan dari userProfileRepository...")
                 userProfileRepository.getProfile(id).collectLatest { result ->
-                    Log.d("ProfileDebug", "Menerima result dari repository: $result")
                     _loading.value = false
                     result.onSuccess { admin ->
                         _adminProfile.value = admin
-                        Log.d("adminVal", "isi dari adminProfileValue: ${_adminProfile.value}")
                     }.onFailure { throwable ->
                         _error.value = throwable.message
                         _adminProfile.value = null
-                        Log.e("ProfileDebug", "GAGAL mengambil profil: ${throwable.message}")
                     }
                 }
             }

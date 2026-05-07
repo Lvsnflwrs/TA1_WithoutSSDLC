@@ -18,29 +18,25 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.mobilesurapp.UIApp.login.LoginStateViewModel
-import android.util.Log
 
 @Composable
-fun ProfileScreen(navController: NavController,
-                  viewModel: ProfileViewModel = hiltViewModel(),
-                  loginStateViewModel: LoginStateViewModel,
-                 )
+fun ProfileScreen(
+        navController: NavController,
+        viewModel: ProfileViewModel = hiltViewModel(),
+        loginStateViewModel: LoginStateViewModel,
+        onNavigateToEditProfile: (String, String, String) -> Unit
+    )
 {
     val adminProfile by viewModel.adminProfile.collectAsState()
-    val loading by viewModel.loading.collectAsState()
-    val error by viewModel.error.collectAsState()
     val loggedInAdminId by loginStateViewModel.currentAdminId.collectAsState()
 
     LaunchedEffect(loggedInAdminId) {
-        Log.d("ProfileDebug", "LaunchedEffect terpantau. ID saat ini: $loggedInAdminId")
         loggedInAdminId?.let { id ->
-            Log.d("ProfileDebug", "Mengirim ID $id ke ViewModel")
             viewModel.setAdminId(id)
         }
     }
 
     Column(modifier = Modifier.fillMaxSize()) {
-        // Header
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -90,7 +86,7 @@ fun ProfileScreen(navController: NavController,
                 .padding(horizontal = 32.dp, vertical = 16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            ProfileMenuItem("Edit Profile") { /* Navigate */ }
+            ProfileMenuItem("Edit Profile") { adminProfile?.let { onNavigateToEditProfile(it.id, adminProfile!!.name, adminProfile!!.email) } }
             ProfileMenuItem("Change Password") { /* Navigate */ }
             ProfileMenuItem("Notification Settings") { /* Navigate */ }
             ProfileMenuItem("About App") { /* Navigate */ }

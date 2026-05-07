@@ -2,21 +2,26 @@ package com.example.mobilesurapp.navigation
 
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
-import com.example.mobilesurapp.UIApp.Camera.CameraScreen
-import com.example.mobilesurapp.UIApp.Camera.CameraViewModel
-import com.example.mobilesurapp.UIApp.login.LoginScreen
-import com.example.mobilesurapp.UIApp.login.LoginStateViewModel
-import androidx.compose.material3.Text
+
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
+import androidx.navigation.NavType
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
+
+import com.example.mobilesurapp.UIApp.Camera.CameraScreen
+import com.example.mobilesurapp.UIApp.Camera.CameraViewModel
+import com.example.mobilesurapp.UIApp.login.LoginScreen
+import com.example.mobilesurapp.UIApp.login.LoginStateViewModel
 import com.example.mobilesurapp.UIApp.addFace.AddFaceScreen
 import com.example.mobilesurapp.UIApp.login.BiometricLoginScreen
 import com.example.mobilesurapp.UIApp.login.ReAuthScreen
 import com.example.mobilesurapp.UIApp.profile.ProfileScreen
-import androidx.navigation.navArgument
-import androidx.navigation.NavType
+import com.example.mobilesurapp.UIApp.edit_profile.EditProfileScreen
+
 
 @Composable
 fun AppNavGraph(
@@ -40,7 +45,7 @@ fun AppNavGraph(
                         popUpTo("login") { inclusive = true }
                     }
                 },
-                onNavigateToBiomtericLogin = {
+                onNavigateToBiometricLogin = {
                     navController.navigate("BiometricLogin")
                 }
             )
@@ -65,7 +70,12 @@ fun AppNavGraph(
         composable("profile") {
             ProfileScreen(
                 navController = navController,
-                loginStateViewModel = loginStateViewModel
+                loginStateViewModel = loginStateViewModel,
+                onNavigateToEditProfile = { adminId, name, email ->
+                    val target = "UpdateProfile/$adminId/$name/$email"
+                    val safeTarget = URLEncoder.encode(target, StandardCharsets.UTF_8.toString())
+                    navController.navigate("reauth/$safeTarget")
+                }
             )
         }
 
@@ -104,6 +114,26 @@ fun AppNavGraph(
                 onNavigateToAddFace = { navController.navigate("reauth/addFace") },
 
                 onNavigateBack = { navController.popBackStack()}
+            )
+        }
+
+        composable(
+            route = "UpdateProfile/{adminId}/{name}/{email}",
+            arguments = listOf(
+                navArgument("adminId") { type = NavType.StringType },
+                navArgument("name") { type = NavType.StringType },
+                navArgument("email") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val adminId = backStackEntry.arguments?.getString("adminId") ?: ""
+            val name = backStackEntry.arguments?.getString("name") ?: ""
+            val email = backStackEntry.arguments?.getString("email") ?: ""
+
+            EditProfileScreen(
+                adminId = adminId,
+                initialName = name,
+                initialEmail = email,
+                onBackClick = { navController.popBackStack("profile", inclusive = false) }
             )
         }
     }
