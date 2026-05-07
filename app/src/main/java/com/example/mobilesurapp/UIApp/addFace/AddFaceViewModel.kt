@@ -45,7 +45,6 @@ class AddFaceViewModel @Inject constructor(
     val email = mutableStateOf("")
     val phone = mutableStateOf("")
     private var currentAdminId: String = ""
-    val role = mutableStateOf("")
 
     private val _lensFacing = MutableStateFlow(CameraSelector.LENS_FACING_FRONT)
     val lensFacing: StateFlow<Int> = _lensFacing

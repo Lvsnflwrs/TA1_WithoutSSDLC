@@ -25,7 +25,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 fun LoginScreen(
     viewModel: LoginViewModel = hiltViewModel(),
     onLoginSuccess: (String) -> Unit,
-    onNavigateToBiomtericLogin: () -> Unit
+    onNavigateToBiometricLogin: () -> Unit
 ) {
     val email by viewModel.email.collectAsState()
     val password by viewModel.password.collectAsState()
@@ -118,7 +118,7 @@ fun LoginScreen(
             Spacer(modifier = Modifier.height(20.dp))
 
             Button(
-                onClick = { onNavigateToBiomtericLogin() },
+                onClick = { onNavigateToBiometricLogin() },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp)
