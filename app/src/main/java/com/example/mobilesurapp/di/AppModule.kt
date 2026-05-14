@@ -3,6 +3,7 @@ package com.example.mobilesurapp.di
 import android.content.Context
 import androidx.room.Room
 import okhttp3.OkHttpClient
+import okhttp3.CertificatePinner
 import com.google.gson.Gson
 
 import com.example.mobilesurapp.UIApp.login.LoginStateViewModel
@@ -47,8 +48,27 @@ object AppModule {
     @Singleton
     fun provideWebSocketClient(okHttpClient: OkHttpClient, gson: Gson): WebSocketClient {
         val websocketClient = WebSocketClient(okHttpClient, gson)
-        websocketClient.connect("ws://192.168.100.47:3000")
+        websocketClient.connect("wss://192.168.100.47:3000")
         return websocketClient
+    }
+
+    @Provides
+    @Singleton
+    fun provideOkHttpClient(): OkHttpClient {
+        val certificatePinner = CertificatePinner.Builder()
+            .add("192.168.100.47", "sha256/z2r9npp2ICYAyv/74FuzrVEKXbWi1JJ5hpT0TsjRNO8=")
+            .build()
+        val hostnameVerifier = javax.net.ssl.HostnameVerifier { hostname, session ->
+            if (hostname == "192.168.100.47") {
+                true
+            } else {
+                javax.net.ssl.HttpsURLConnection.getDefaultHostnameVerifier().verify(hostname, session)
+            }
+        }
+        return OkHttpClient.Builder()
+            .certificatePinner(certificatePinner)
+            .hostnameVerifier(hostnameVerifier)
+            .build()
     }
 
     @Provides
@@ -67,12 +87,6 @@ object AppModule {
     @Singleton
     fun provideLoginStateViewModel(): LoginStateViewModel {
         return LoginStateViewModel()
-    }
-
-    @Provides
-    @Singleton
-    fun provideOkHttpClient(): OkHttpClient {
-        return OkHttpClient.Builder().build()
     }
 
     @Provides

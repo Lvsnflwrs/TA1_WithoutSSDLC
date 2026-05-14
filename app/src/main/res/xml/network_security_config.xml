@@ -1,13 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <network-security-config>
-    <domain-config cleartextTrafficPermitted="true">
-        <domain includeSubdomains="true">192.168.100.47</domain>
-    </domain-config>
-
-    <debug-overrides>
+    <base-config cleartextTrafficPermitted="false">
         <trust-anchors>
-            <certificates src="user" />
             <certificates src="system" />
         </trust-anchors>
-    </debug-overrides>
+    </base-config>
+
+    <domain-config cleartextTrafficPermitted="false">
+        <domain includeSubdomains="true">192.168.100.47</domain>
+        <trust-anchors>
+            <certificates src="@raw/server_cert" />
+            <certificates src="system" />
+        </trust-anchors>
+    </domain-config>
 </network-security-config>

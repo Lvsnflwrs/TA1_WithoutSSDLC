@@ -55,7 +55,7 @@ fun AppNavGraph(
                 hiltViewModel<CameraViewModel>(viewModelStoreOwner = activityViewModelStoreOwner)
             CameraScreen(
                 viewModel = cameraViewModel,
-                onNavigateToProfile = {navController.navigate("profile")}
+                onNavigateToProfile = {navController.navigate("reauth/profile")}
             )
         }
 
@@ -72,9 +72,10 @@ fun AppNavGraph(
                 navController = navController,
                 loginStateViewModel = loginStateViewModel,
                 onNavigateToEditProfile = { adminId, name, email ->
-                    val target = "UpdateProfile/$adminId/$name/$email"
-                    val safeTarget = URLEncoder.encode(target, StandardCharsets.UTF_8.toString())
-                    navController.navigate("reauth/$safeTarget")
+                    val safeName = URLEncoder.encode(name, StandardCharsets.UTF_8.toString())
+                    val safeEmail = URLEncoder.encode(email, StandardCharsets.UTF_8.toString())
+                    val targetRoute = "UpdateProfile/$adminId/$safeName/$safeEmail"
+                    navController.navigate(targetRoute)
                 }
             )
         }
@@ -129,10 +130,13 @@ fun AppNavGraph(
             val name = backStackEntry.arguments?.getString("name") ?: ""
             val email = backStackEntry.arguments?.getString("email") ?: ""
 
+            val decodedName = java.net.URLDecoder.decode(name, StandardCharsets.UTF_8.toString())
+            val decodedEmail = java.net.URLDecoder.decode(email, StandardCharsets.UTF_8.toString())
+
             EditProfileScreen(
                 adminId = adminId,
-                initialName = name,
-                initialEmail = email,
+                initialName = decodedName,
+                initialEmail = decodedEmail,
                 onBackClick = { navController.popBackStack("profile", inclusive = false) }
             )
         }

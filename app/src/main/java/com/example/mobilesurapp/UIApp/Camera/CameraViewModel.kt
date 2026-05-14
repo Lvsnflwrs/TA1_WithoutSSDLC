@@ -94,11 +94,21 @@ class CameraViewModel @Inject constructor(
     }
 
     fun processFrame(bitmap: Bitmap, rotationDegrees: Int) {
-        lastProcessedBitmap?.recycle()
-        lastProcessedBitmap = bitmap.config?.let { bitmap.copy(it, true) }
-        lastBitmapRotationDegrees = rotationDegrees
-        Log.d("CameraViewModel", "processFrame: Received bitmap Dims: ${bitmap.width}x${bitmap.height}, Rotation: $rotationDegrees. Passing to faceDetector.")
-        faceDetector?.detect(bitmap)
+        try {
+            lastProcessedBitmap?.recycle()
+            if (!bitmap.isRecycled) {
+                lastProcessedBitmap = bitmap.config?.let { bitmap.copy(it, true) }
+            }
+            lastBitmapRotationDegrees = rotationDegrees
+
+            Log.d("CameraViewModel", "processFrame: Received bitmap Dims: ${bitmap.width}x${bitmap.height}, Rotation: $rotationDegrees. Passing to faceDetector.")
+            faceDetector?.detect(bitmap)
+
+        } catch (e: IllegalArgumentException) {
+            Log.e("CameraViewModel", "Gambar korup ditolak saat proses copy memori: ${e.message}")
+        } catch (e: Exception) {
+            Log.e("CameraViewModel", "Native Library Exception (Memory Protection): ${e.message}")
+        }
     }
 
     fun verifyDetectedFace() {
