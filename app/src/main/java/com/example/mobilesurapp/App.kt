@@ -6,6 +6,7 @@ import androidx.work.Configuration
 import dagger.hilt.android.HiltAndroidApp
 import javax.inject.Inject
 import android.util.Log
+import com.google.android.gms.security.ProviderInstaller
 
 @HiltAndroidApp
 class MobileSurApp : Application(), Configuration.Provider{
@@ -19,4 +20,18 @@ class MobileSurApp : Application(), Configuration.Provider{
                 .setWorkerFactory(workerFactory)
                 .build()
         }
+
+    override fun onCreate() {
+        super.onCreate()
+        upgradeSecurityProvider()
+    }
+
+    private fun upgradeSecurityProvider() {
+        try {
+            ProviderInstaller.installIfNeeded(this)
+            Log.d("Security", "Security Provider berhasil diperbarui ke versi terbaru oleh Play Services.")
+        } catch (e: Exception) {
+            Log.e("Security", "Gagal memperbarui Security Provider: ${e.message}")
+        }
+    }
 }

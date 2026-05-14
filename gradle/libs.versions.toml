@@ -19,6 +19,7 @@ hiltWork = "1.2.0"
 gson = "2.10.1"
 okhttp = "4.12.0"
 ksp = "2.0.21-1.0.28"
+playServicesBase = "18.10.0"
 playServicesMlkit = "17.1.0"
 mediapipeTasksVision = "0.10.21"
 media3CommonKtx = "1.7.1"
@@ -61,6 +62,7 @@ androidx-hilt-work = { group = "androidx.hilt", name = "hilt-work", version.ref 
 gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
 okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }
 
+play-services = { module = "com.google.android.gms:play-services-base", version.ref = "playServicesBase" }
 play-services-mlkit-face-detection = { group = "com.google.android.gms", name = "play-services-mlkit-face-detection", version.ref = "playServicesMlkit" }
 tasks-vision = { group = "com.google.mediapipe", name = "tasks-vision", version.ref = "mediapipeTasksVision" }
 androidx-media3-common-ktx = { group = "androidx.media3", name = "media3-common-ktx", version.ref = "media3CommonKtx" }
