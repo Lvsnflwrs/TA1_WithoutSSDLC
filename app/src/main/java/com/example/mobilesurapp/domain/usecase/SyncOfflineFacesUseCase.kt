@@ -48,19 +48,19 @@ class SyncOfflineFacesUseCase @Inject constructor(
 
             when (syncItem.action) {
                 "ADD" -> {
-                    Log.d("SyncOfflineFacesUseCase", "Attempting to sync ADD for user ${user.name}")
+
                     val result = webSocketClient.sendInsertFaceRequest(user)
                     if (result is ApiResult.Success && result.data) {
-                        Log.d("SyncOfflineFacesUseCase", "Successfully synced ADD for user ${user.name}")
+
                         faceRepository.deleteLocalUser(syncItem.userLocalId)
                         faceRepository.clearPendingSyncs()
                     } else if (result is ApiResult.Error) {
-                        Log.e("SyncOfflineFacesUseCase", "Failed to sync ADD for user ${user.name}: ${result.message}")
+                        Log.e("SyncOfflineFacesUseCase", "Failed to sync ADD for user")
                         allSyncedSuccessfully = false
                     }
                 }
                 "DELETE" -> {
-                    Log.d("SyncOfflineFacesUseCase", "Attempting to sync DELETE for user ${user.name}")
+                    Log.d("SyncOfflineFacesUseCase", "Attempting to sync DELETE for user")
                     faceRepository.clearPendingSyncs()
                 }
             }

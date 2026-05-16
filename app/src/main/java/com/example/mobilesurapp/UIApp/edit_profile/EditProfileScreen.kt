@@ -1,9 +1,11 @@
 package com.example.mobilesurapp.UIApp.edit_profile
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.mobilesurapp.UIApp.components.TopBar
@@ -49,20 +51,26 @@ fun EditProfileScreen(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // TextField untuk Nama Lengkap
             OutlinedTextField(
-                value = name, // Menggunakan 'name'
-                onValueChange = { viewModel.onNameChange(it) }, // Menggunakan onNameChange
+                value = name,
+                onValueChange = { viewModel.onNameChange(it) },
                 label = { Text("Nama Lengkap") },
+                keyboardOptions = KeyboardOptions(
+                    autoCorrectEnabled = false,
+                    keyboardType = KeyboardType.Password
+                ),
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true
             )
 
-            // TextField untuk Email
             OutlinedTextField(
                 value = email,
                 onValueChange = { viewModel.onEmailChange(it) },
                 label = { Text("Email") },
+                keyboardOptions = KeyboardOptions(
+                    autoCorrectEnabled = false,
+                    keyboardType = KeyboardType.Email
+                ),
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true
             )

@@ -45,8 +45,6 @@ fun FaceOverlay(
                 ),
                 style = Stroke(width = 6f)
             )
-
-            Log.d("FaceOverlay", "Face #$index mapped to $mappedBox (orig=${box})")
         }
 
     }

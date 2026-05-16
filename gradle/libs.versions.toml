@@ -1,5 +1,6 @@
 [versions]
 agp = "8.9.1"
+androidDatabaseSqlcipher = "4.5.4"
 cameraViewfinderCompose = "1.0.0-alpha02"
 kotlin = "2.0.21"
 coreKtx = "1.16.0"
@@ -23,16 +24,19 @@ playServicesBase = "18.10.0"
 playServicesMlkit = "17.1.0"
 mediapipeTasksVision = "0.10.21"
 media3CommonKtx = "1.7.1"
+sqliteKtx = "2.6.2"
 tensorflowLite = "2.15.0"
 workRuntimeKtx = "2.10.2"
 room = "2.7.2"
 cameraView = "1.6.0"
 
 [libraries]
+android-database-sqlcipher = { module = "net.zetetic:android-database-sqlcipher", version.ref = "androidDatabaseSqlcipher" }
 androidx-camera-viewfinder-compose = { module = "androidx.camera:camera-viewfinder-compose", version.ref = "cameraViewfinderCompose" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycleViewmodelCompose" }
 androidx-material-icons-extended = { module = "androidx.compose.material:material-icons-extended" }
+androidx-sqlite-ktx = { module = "androidx.sqlite:sqlite-ktx", version.ref = "sqliteKtx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }

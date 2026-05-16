@@ -29,7 +29,6 @@ class MobileSurApp : Application(), Configuration.Provider{
     private fun upgradeSecurityProvider() {
         try {
             ProviderInstaller.installIfNeeded(this)
-            Log.d("Security", "Security Provider berhasil diperbarui ke versi terbaru oleh Play Services.")
         } catch (e: Exception) {
             Log.e("Security", "Gagal memperbarui Security Provider: ${e.message}")
         }

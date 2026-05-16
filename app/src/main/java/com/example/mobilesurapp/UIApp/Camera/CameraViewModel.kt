@@ -101,7 +101,6 @@ class CameraViewModel @Inject constructor(
             }
             lastBitmapRotationDegrees = rotationDegrees
 
-            Log.d("CameraViewModel", "processFrame: Received bitmap Dims: ${bitmap.width}x${bitmap.height}, Rotation: $rotationDegrees. Passing to faceDetector.")
             faceDetector?.detect(bitmap)
 
         } catch (e: IllegalArgumentException) {
@@ -169,7 +168,6 @@ class CameraViewModel @Inject constructor(
                         when (val result = verifyFaceUseCase(embeddings)) {
                             is ApiResult.Success -> {
                                 _verificationResult.value = result.data
-                                Log.d("CameraViewModel", "Verification result: ${result.data.isMatch}, Matched User: ${result.data.matchedUser?.name}, Distance: ${result.data.distance}")
                             }
                             is ApiResult.Error -> {
                                 Log.e("CameraViewModel", "Error during verification: ${result.message}", result.exception)

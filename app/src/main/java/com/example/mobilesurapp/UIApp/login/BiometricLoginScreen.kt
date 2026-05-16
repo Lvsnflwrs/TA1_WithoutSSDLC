@@ -90,7 +90,6 @@ fun BiometricLoginScreen(
             if (result.isMatch) {
                 val userName = result.matchedUser?.name ?: "Pengguna"
                 val adminId = result.matchedUser?.adminId?.toString() ?: ""
-                Log.d("BioProfile", adminId)
                 Toast.makeText(context, "Verifikasi Berhasil. Selamat datang, $userName!", Toast.LENGTH_SHORT).show()
                 onLoginSuccess(adminId)
             } else if (result.distance != -1.0f) {

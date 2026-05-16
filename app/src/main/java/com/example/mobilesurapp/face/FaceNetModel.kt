@@ -64,10 +64,9 @@ class FaceNetModel @Inject constructor(context: Context) {
         try {
             interpreter?.run(inputBuffer, outputBuffer)
             val embeddingsFloatArray = outputBuffer[0]
-            Log.d("FaceNetModel", "Face embedding generated: ${embeddingsFloatArray.size} dimensions.")
             return embeddingsFloatArray
         } catch (e: Exception) {
-            Log.e("FaceNetModel", "Error running interpreter for embedding: ${e.message}", e)
+            Log.e("FaceNetModel", "Error running interpreter for embedding", e)
             return null
         } finally {
             scaledBitmap.recycle()
