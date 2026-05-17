@@ -175,6 +175,7 @@ class CameraViewModel @Inject constructor(
                             }
                             ApiResult.Loading -> { }
                         }
+                        embeddings.fill(0.0f)
                     } else {
                         Log.e("CameraViewModel", "Gagal mendapatkan embeddings untuk verifikasi.")
                         _verificationResult.value = FaceVerificationResult(isMatch = false, matchedUser = null, distance = -1.0f)

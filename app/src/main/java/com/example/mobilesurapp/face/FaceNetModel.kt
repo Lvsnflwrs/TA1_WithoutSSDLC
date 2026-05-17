@@ -64,6 +64,12 @@ class FaceNetModel @Inject constructor(context: Context) {
         try {
             interpreter?.run(inputBuffer, outputBuffer)
             val embeddingsFloatArray = outputBuffer[0]
+
+            inputBuffer.rewind()
+            while (inputBuffer.hasRemaining()) {
+                inputBuffer.put(0.toByte())
+            }
+
             return embeddingsFloatArray
         } catch (e: Exception) {
             Log.e("FaceNetModel", "Error running interpreter for embedding", e)

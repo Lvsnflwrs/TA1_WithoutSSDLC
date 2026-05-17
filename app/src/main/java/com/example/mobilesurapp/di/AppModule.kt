@@ -5,7 +5,7 @@ import androidx.room.Room
 import okhttp3.OkHttpClient
 import okhttp3.CertificatePinner
 import com.google.gson.Gson
-import net.sqlcipher.database.SQLiteDatabase
+import android.util.Base64
 import net.sqlcipher.database.SupportFactory
 
 import com.example.mobilesurapp.UIApp.login.LoginStateViewModel
@@ -25,6 +25,7 @@ import com.example.mobilesurapp.domain.usecase.VerifyFaceUseCase
 import com.example.mobilesurapp.domain.usecase.GetUserProfileUseCase
 import com.example.mobilesurapp.domain.usecase.UpdateUserProfileUseCase
 import com.example.mobilesurapp.domain.utils.NetworkUtils
+import com.example.mobilesurapp.domain.utils.CryptoManager
 
 import com.example.mobilesurapp.face.FaceEmbedder
 import com.example.mobilesurapp.face.FaceNetModel
@@ -41,11 +42,18 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import java.security.SecureRandom
 import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
+    @Provides
+    @Singleton
+    fun provideCryptoManager(): CryptoManager {
+        return CryptoManager()
+    }
+
     @Provides
     @Singleton
     fun provideWebSocketClient(okHttpClient: OkHttpClient, gson: Gson): WebSocketClient {
@@ -105,12 +113,29 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideAppDatabase(@ApplicationContext context: Context): AppDatabase {
-        val passphraseString = "GXOLHCMobileSurveillanceSystem_SecureKey_2026"
-        val passphrase = SQLiteDatabase.getBytes(passphraseString.toCharArray())
+    fun provideAppDatabase(@ApplicationContext context: Context, cryptoManager: CryptoManager): AppDatabase {
+        val prefs = context.getSharedPreferences("secure_app_prefs", Context.MODE_PRIVATE)
+        var encryptedKeyBase64 = prefs.getString("encrypted_db_key", null)
 
-        val factory = SupportFactory(passphrase)
+        val dbPassphrase: ByteArray
 
+        if (encryptedKeyBase64 == null) {
+
+            val secureRandom = SecureRandom()
+            val newKey = ByteArray(32)
+            secureRandom.nextBytes(newKey)
+
+            val encryptedKey = cryptoManager.encrypt(newKey)
+
+            encryptedKeyBase64 = Base64.encodeToString(encryptedKey, Base64.DEFAULT)
+            prefs.edit().putString("encrypted_db_key", encryptedKeyBase64).apply()
+
+            dbPassphrase = newKey
+        } else {
+            val encryptedKey = Base64.decode(encryptedKeyBase64, Base64.DEFAULT)
+            dbPassphrase = cryptoManager.decrypt(encryptedKey)
+        }
+        val factory = SupportFactory(dbPassphrase)
         return Room.databaseBuilder(
             context,
             AppDatabase::class.java,
