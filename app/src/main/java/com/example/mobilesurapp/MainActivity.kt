@@ -23,6 +23,7 @@ import com.example.mobilesurapp.domain.utils.isDeviceSecure
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import android.view.WindowManager
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -32,6 +33,12 @@ class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalPermissionsApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        window.decorView.filterTouchesWhenObscured = true
+        window.setFlags(
+            WindowManager.LayoutParams.FLAG_SECURE,
+            WindowManager.LayoutParams.FLAG_SECURE
+        )
 
         val syncWorkRequest = PeriodicWorkRequestBuilder<FaceSyncWorker>(
             15, TimeUnit.SECONDS
