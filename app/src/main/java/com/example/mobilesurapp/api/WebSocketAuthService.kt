@@ -32,7 +32,6 @@ class WebSocketAuthService @Inject constructor() {
 
     fun connect(wsUrl: String) {
         if (webSocket != null && webSocket?.send("") == true) {
-            Log.d(TAG, "WebSocket is already connected.")
             return
         }
         webSocket = null
@@ -40,11 +39,9 @@ class WebSocketAuthService @Inject constructor() {
         val request = Request.Builder().url(wsUrl).build()
         webSocket = client.newWebSocket(request, object : WebSocketListener() {
             override fun onOpen(webSocket: WebSocket, response: Response) {
-                Log.d(TAG, "WebSocket Connected: ${response.message}")
             }
 
             override fun onMessage(webSocket: WebSocket, text: String) {
-                Log.d(TAG, "Receiving: $text")
                 try {
                     val jsonResponse = JSONObject(text)
                     when (jsonResponse.optString("type")) {
@@ -95,11 +92,9 @@ class WebSocketAuthService @Inject constructor() {
             }
 
             override fun onMessage(webSocket: WebSocket, bytes: ByteString) {
-                Log.d(TAG, "Receiving bytes: ${bytes.hex()}")
             }
 
             override fun onClosing(webSocket: WebSocket, code: Int, reason: String) {
-                Log.d(TAG, "Closing: $code / $reason")
                 webSocket.close(1000, null)
             }
 
@@ -111,7 +106,6 @@ class WebSocketAuthService @Inject constructor() {
             }
 
             override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {
-                Log.d(TAG, "WebSocket Closed: $code / $reason")
                 this@WebSocketAuthService.webSocket = null
                 lastSentLoginRequest = null
             }
@@ -134,7 +128,6 @@ class WebSocketAuthService @Inject constructor() {
 
         val sent = webSocket?.send(message) ?: false
         if (sent) {
-            Log.d(TAG, "Sending: $message")
         } else {
             Log.e(TAG, "Failed to send message: $message. WebSocket might not be open.")
         }
@@ -155,7 +148,6 @@ class WebSocketAuthService @Inject constructor() {
             put("adminId", adminId)
             put("username", username)
             put("email", email)
-            // Add other fields if you want to update them (e.g., password, but handle securely)
         }.toString()
         sendMessage(message)
     }

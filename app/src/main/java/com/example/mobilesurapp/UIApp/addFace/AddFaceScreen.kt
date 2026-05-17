@@ -238,6 +238,10 @@ fun AddFaceScreen(
             OutlinedTextField(
                 value = userNameInput,
                 onValueChange = { userNameInput = it },
+                keyboardOptions = KeyboardOptions(
+                    autoCorrectEnabled = false,
+                    keyboardType = KeyboardType.Password
+                ),
                 label = { Text("Nama") },
                 modifier = Modifier.fillMaxWidth()
             )
@@ -247,7 +251,10 @@ fun AddFaceScreen(
                 value = userEmailInput,
                 onValueChange = { userEmailInput = it },
                 label = { Text("Email") },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                keyboardOptions = KeyboardOptions(
+                    autoCorrectEnabled = false,
+                    keyboardType = KeyboardType.Email
+                ),
                 modifier = Modifier.fillMaxWidth()
             )
 
@@ -274,7 +281,10 @@ fun AddFaceScreen(
                 value = userPhoneInput,
                 onValueChange = { userPhoneInput = it },
                 label = { Text("No Telepon (62)") },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
+                keyboardOptions = KeyboardOptions(
+                    autoCorrectEnabled = false,
+                    keyboardType = KeyboardType.NumberPassword
+                ),
                 modifier = Modifier.fillMaxWidth()
             )
 

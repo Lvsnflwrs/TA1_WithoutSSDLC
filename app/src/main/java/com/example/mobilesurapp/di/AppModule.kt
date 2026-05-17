@@ -5,6 +5,8 @@ import androidx.room.Room
 import okhttp3.OkHttpClient
 import okhttp3.CertificatePinner
 import com.google.gson.Gson
+import net.sqlcipher.database.SQLiteDatabase
+import net.sqlcipher.database.SupportFactory
 
 import com.example.mobilesurapp.UIApp.login.LoginStateViewModel
 import com.example.mobilesurapp.api.WebSocketClient
@@ -104,11 +106,16 @@ object AppModule {
     @Provides
     @Singleton
     fun provideAppDatabase(@ApplicationContext context: Context): AppDatabase {
+        val passphraseString = "GXOLHCMobileSurveillanceSystem_SecureKey_2026"
+        val passphrase = SQLiteDatabase.getBytes(passphraseString.toCharArray())
+
+        val factory = SupportFactory(passphrase)
+
         return Room.databaseBuilder(
             context,
             AppDatabase::class.java,
             "faceRecogntionDB"
-        ).fallbackToDestructiveMigration().build()
+        ).openHelperFactory(factory).fallbackToDestructiveMigration().build()
     }
 
     @Provides

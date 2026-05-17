@@ -109,7 +109,6 @@ class AddFaceViewModel @Inject constructor(
         viewModelScope.launch {
             _lensFacing.collect { lens ->
                 isFrontCamera = (lens == CameraSelector.LENS_FACING_FRONT)
-                Log.d(TAG, "Lens facing updated: ${if (isFrontCamera) "FRONT" else "BACK"}")
             }
         }
     }
@@ -165,7 +164,6 @@ class AddFaceViewModel @Inject constructor(
                 _recordingProgress.value = ((System.currentTimeMillis() - startTime).toFloat() / RECORD_DURATION_MILLIS)
                 delay(100)
             }
-            Log.d(TAG, "Recording finished. Captured ${capturedFrames.size} frames.")
             _recordingState.value = RecordingState.PROCESSING
             _message.value = "Memproses frame dan membuat embedding..."
             processBufferedFrames()
@@ -281,9 +279,7 @@ class AddFaceViewModel @Inject constructor(
                 val bitmap = iterator.next()
                 frameIndex++
 
-                _message.value = "Memproses frame ${frameIndex}/${totalFrames}..."
-                Log.d(TAG, "Processing frame ${frameIndex}/${totalFrames}. Original Bitmap Dims: ${bitmap.width}x${bitmap.height}")
-
+                _message.value = "Memproses frame..."
                 try {
                     val debugFileName = "processed_frame_${frameIndex}_${System.currentTimeMillis()}.jpg"
                     val file = File(getApplication<Application>().getExternalFilesDir(null), debugFileName)
@@ -310,9 +306,7 @@ class AddFaceViewModel @Inject constructor(
 
                 detectionResult.detections().firstOrNull()?.let { detection ->
                     facesDetectedCount++
-                    Log.d(TAG, "Face detected in frame ${frameIndex}.")
                     val originalFaceBox = detection.boundingBox()
-                    Log.d(TAG, "Original Bounding Box for frame ${frameIndex}: left=${originalFaceBox.left}, top=${originalFaceBox.top}, right=${originalFaceBox.right}, bottom=${originalFaceBox.bottom}")
 
                     val expandedFaceBox = ImageCropper.expandBoundingBox(
                         boundingBox = originalFaceBox,
@@ -320,7 +314,6 @@ class AddFaceViewModel @Inject constructor(
                         imageHeight = bitmap.height,
                         expansionFactor = FACE_EXPANSION_FACTOR
                     )
-                    Log.d(TAG, "Expanded Crop Box for frame ${frameIndex}: left=${expandedFaceBox.left}, top=${expandedFaceBox.top}, right=${expandedFaceBox.right}, bottom=${expandedFaceBox.bottom}")
 
                     var croppedFace: Bitmap? = null
                     try {
@@ -339,7 +332,6 @@ class AddFaceViewModel @Inject constructor(
                         iterator.remove()
                         return@let
                     }
-                    Log.d(TAG, "Cropped Bitmap Dims for frame ${frameIndex}: ${croppedFace.width}x${croppedFace.height}")
 
                     var resizedFace: Bitmap? = null
                     try {
@@ -361,7 +353,6 @@ class AddFaceViewModel @Inject constructor(
                         iterator.remove()
                         return@let
                     }
-                    Log.d(TAG, "Resized Bitmap Dims for frame ${frameIndex}: ${resizedFace.width}x${resizedFace.height}")
 
                     val embedding = try {
                         faceEmbedder.getEmbeddings(resizedFace)
@@ -386,13 +377,10 @@ class AddFaceViewModel @Inject constructor(
                 }
             }
             capturedFrames.clear()
-            Log.d(TAG, "Finished processing all frames. Total faces detected: $facesDetectedCount. Total frames processed for embedding: $processedFramesForEmbeddingCount.")
         }
 
         if (allEmbeddings.isNotEmpty()) {
             val averagedEmbedding = averageEmbeddings(allEmbeddings)
-            Log.d(TAG, "Averaged embedding calculated.")
-            Log.d("BioProfile", "Mencoba menyimpan wajah. Admin ID dari UI: $currentAdminId")
             val user = User(
                 adminId = currentAdminId.toIntOrNull(),
                 name = name.value,
@@ -401,8 +389,6 @@ class AddFaceViewModel @Inject constructor(
                 embeddings = averagedEmbedding,
                 role = "admin"
             )
-            Log.d(TAG, "Attempting to register user with averaged embedding.")
-            Log.d("BioProfile", "Data User yang akan di-insert: $user")
             when (val result = registerUserWithFaceUseCase(user.adminId, user.name, user.email, user.phone, user.embeddings, user.role)) {
                 is ApiResult.Success -> {
                     if (result.data) {

@@ -60,12 +60,6 @@ object CameraPreviewTransformer {
         mappedRight = mappedRight.coerceAtMost(viewWidth)
         mappedBottom = mappedBottom.coerceAtMost(viewHeight)
 
-        Log.d("CameraPreviewTransformer", "Orig Box: $boundingBox, Image Dims: ${imageWidth}x${imageHeight}")
-        Log.d("CameraPreviewTransformer", "View Dims: ${viewWidth}x${viewHeight}, Scale: $scale, OffsetX: $offsetX, OffsetY: $offsetY")
-        Log.d("CameraPreviewTransformer", "Mapped Box (original): Rect(${originalMappedLeft.roundToInt()}, ${originalMappedTop.roundToInt()}, ${originalMappedRight.roundToInt()}, ${originalMappedBottom.roundToInt()})")
-        Log.d("CameraPreviewTransformer", "Mapped Box (expanded): Rect(${mappedLeft.roundToInt()}, ${mappedTop.roundToInt()}, ${mappedRight.roundToInt()}, ${mappedBottom.roundToInt()})")
-
-
         return Rect(
             mappedLeft.roundToInt(),
             mappedTop.roundToInt(),

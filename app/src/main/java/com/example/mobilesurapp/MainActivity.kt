@@ -18,6 +18,11 @@ import androidx.work.WorkManager
 import java.util.concurrent.TimeUnit
 import com.example.mobilesurapp.background.FaceSyncWorker
 import androidx.activity.viewModels
+import androidx.compose.ui.platform.LocalContext
+import com.example.mobilesurapp.domain.utils.isDeviceSecure
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -39,26 +44,43 @@ class MainActivity : ComponentActivity() {
         )
 
         setContent {
-            val cameraPermissionState =
-                rememberPermissionState(permission = Manifest.permission.CAMERA)
-
-            LaunchedEffect(Unit) {
-                if (!cameraPermissionState.status.isGranted) {
-                    cameraPermissionState.launchPermissionRequest()
-                }
-            }
-
-            if (cameraPermissionState.status.isGranted) {
-                val navController = rememberNavController()
-                val initialStartDestination = remember {
-                    if (loginStateViewModel.isLoggedIn.value) "camera" else "login"
-                }
-
-                AppNavGraph(
-                    navController = navController,
-                    loginStateViewModel = loginStateViewModel,
-                    startDestination = initialStartDestination
+            val context = LocalContext.current
+            val isSecure = remember { isDeviceSecure(context) }
+            if (!isSecure) {
+                AlertDialog(
+                    onDismissRequest = { },
+                    title = { Text("Keamanan Perangkat Lemah") },
+                    text = { Text("Aplikasi Mobile Surveillance tidak dapat dijalankan. Harap pasang PIN, Pola, atau Kata Sandi pada perangkat Anda demi keamanan data intelijen.") },
+                    confirmButton = {
+                        TextButton(onClick = {
+                            finish()
+                        }) {
+                            Text("Tutup Aplikasi")
+                        }
+                    }
                 )
+            } else {
+                val cameraPermissionState =
+                    rememberPermissionState(permission = Manifest.permission.CAMERA)
+
+                LaunchedEffect(Unit) {
+                    if (!cameraPermissionState.status.isGranted) {
+                        cameraPermissionState.launchPermissionRequest()
+                    }
+                }
+
+                if (cameraPermissionState.status.isGranted) {
+                    val navController = rememberNavController()
+                    val initialStartDestination = remember {
+                        if (loginStateViewModel.isLoggedIn.value) "camera" else "login"
+                    }
+
+                    AppNavGraph(
+                        navController = navController,
+                        loginStateViewModel = loginStateViewModel,
+                        startDestination = initialStartDestination
+                    )
+                }
             }
         }
     }

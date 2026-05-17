@@ -13,11 +13,9 @@ class UserProfileRepositoryImpl @Inject constructor(
 ) : UserProfileRepository {
 
     override suspend fun getProfile(adminId: String): Flow<Result<Admin>> = callbackFlow {
-        Log.d("UserProfileRepository", "Requesting profile for adminId: $adminId")
         webSocketAuthService.onProfileReceived = { admin, errorMessage ->
             if (admin != null) {
                 trySend(Result.success(admin))
-                Log.d("UserProfileRepository", "Profile received: $admin")
             } else {
                 trySend(Result.failure(Exception(errorMessage ?: "Unknown error fetching profile")))
                 Log.e("UserProfileRepository", "Failed to receive profile: $errorMessage")
@@ -30,11 +28,9 @@ class UserProfileRepositoryImpl @Inject constructor(
     }
 
     override suspend fun updateProfile(adminId: String, name: String, email: String): Flow<Result<Boolean>> = callbackFlow {
-        Log.d("UserProfileRepository", "Updating profile for adminId: $adminId")
         webSocketAuthService.onProfileUpdateResult = { success, message ->
             if (success) {
                 trySend(Result.success(true))
-                Log.d("UserProfileRepository", "Profile update successful: $message")
             } else {
                 trySend(Result.failure(Exception(message ?: "Unknown error updating profile")))
                 Log.e("UserProfileRepository", "Profile update failed: $message")

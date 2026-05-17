@@ -62,13 +62,11 @@ class WebSocketClient @Inject constructor(
         val request = Request.Builder().url(wsUrl).build()
         webSocket = okHttpClient.newWebSocket(request, object : WebSocketListener() {
             override fun onOpen(webSocket: WebSocket, response: Response) {
-                Log.d(TAG, "WebSocket Connected: ${response.message}")
                 _isConnected.value = true
                 _incomingMessages.trySend("Connected")
             }
 
             override fun onMessage(webSocket: WebSocket, text: String) {
-                Log.d(TAG, "Receiving: $text")
                 _incomingMessages.trySend(text)
 
                 try {
@@ -122,18 +120,18 @@ class WebSocketClient @Inject constructor(
             }
 
             override fun onMessage(webSocket: WebSocket, bytes: ByteString) {
-                Log.d(TAG, "Receiving bytes: ${bytes.hex()}")
+                Log.d(TAG, "Receiving bytes...")
             }
 
             override fun onClosing(webSocket: WebSocket, code: Int, reason: String) {
-                Log.d(TAG, "Closing: $code / $reason")
+                Log.d(TAG, "Closing...")
                 _incomingMessages.trySend("Closing: $reason")
                 _isConnected.value = false
                 this@WebSocketClient.webSocket?.close(1000, null)
             }
 
             override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {
-                Log.d(TAG, "WebSocket Closed: $code / $reason")
+                Log.d(TAG, "WebSocket Closed...")
                 _incomingMessages.trySend("Closed: $reason")
                 _isConnected.value = false
                 this@WebSocketClient.webSocket = null
@@ -174,7 +172,6 @@ class WebSocketClient @Inject constructor(
             val jsonMessage = JSONObject(message)
             if (jsonMessage.optString("type") == "LOGIN_REQUEST") {
                 lastSentLoginRequest = message
-                Log.d(TAG, "Stored lastSentLoginRequest for echo check.")
             } else {
                 lastSentLoginRequest = null
             }
@@ -185,7 +182,7 @@ class WebSocketClient @Inject constructor(
 
         val sent = webSocket?.send(message) ?: false
         if (sent) {
-            Log.d(TAG, "Sending: $message")
+            Log.d(TAG, "Sending message..")
         } else {
             Log.e(TAG, "Failed to send message: $message. WebSocket might not be open.")
         }
@@ -195,7 +192,7 @@ class WebSocketClient @Inject constructor(
     private fun sendMessageFireAndForget(message: String): Boolean {
         val sent = webSocket?.send(message) ?: false
         if (sent) {
-            Log.d(TAG, "Sending (fire and forget): $message")
+            Log.d(TAG, "Sending (fire and forget)")
         } else {
             Log.e(TAG, "Failed to send (fire and forget) message: $message. WebSocket might not be open.")
         }
@@ -208,11 +205,9 @@ class WebSocketClient @Inject constructor(
             "embeddings" to embeddings.map { it.toDouble() }
         )
         val jsonMessage = gson.toJson(message)
-        Log.d(TAG, "Sending verification request: $jsonMessage")
 
         if (send(jsonMessage)) {
             val responseText = incomingMessages.collectUntilResponse("recognize_face")
-            Log.d("BioProfile", "Raw JSON dari Server: $responseText")
             return try {
                 val responseMap = gson.fromJson(responseText, Map::class.java)
                 val isMatch = responseMap["match"] as? Boolean ?: false
@@ -255,7 +250,6 @@ class WebSocketClient @Inject constructor(
             "role" to user.role
         )
         val jsonMessage = gson.toJson(message)
-        Log.d(TAG, "Sending insert face request: $jsonMessage")
         if (send(jsonMessage)) {
             val responseText = incomingMessages.collectUntilResponse("insert_face")
             return try {
