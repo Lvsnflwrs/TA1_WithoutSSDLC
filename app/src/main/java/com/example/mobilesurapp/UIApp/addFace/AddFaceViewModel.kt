@@ -408,6 +408,12 @@ class AddFaceViewModel @Inject constructor(
                 }
                 ApiResult.Loading -> { }
             }
+            averagedEmbedding.fill(0.0f)
+            user.embeddings.fill(0.0f)
+            for (emb in allEmbeddings) {
+                emb.fill(0.0f)
+            }
+            allEmbeddings.clear()
         } else {
             _message.value = "Tidak ada wajah yang terdeteksi di frame yang diambil. Terdeteksi ${facesDetectedCount} wajah. Coba lagi."
             _recordingState.value = RecordingState.IDLE
