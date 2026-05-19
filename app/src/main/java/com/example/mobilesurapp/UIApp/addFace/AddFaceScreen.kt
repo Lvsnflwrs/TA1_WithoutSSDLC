@@ -50,7 +50,7 @@ fun AddFaceScreen(
 
     val recordingState by viewModel.recordingState.collectAsState()
     val recordingProgress by viewModel.recordingProgress.collectAsState()
-    val message by viewModel.message.collectAsState()
+    val errorNama by viewModel.namaError.collectAsState()
     val errorEmail by viewModel.emailError.collectAsState()
     val errorPhone by viewModel.phoneError.collectAsState()
     val lensFacing by viewModel.lensFacing.collectAsState()
@@ -245,8 +245,25 @@ fun AddFaceScreen(
                 label = { Text("Nama") },
                 modifier = Modifier.fillMaxWidth()
             )
+
             Spacer(modifier = Modifier.height(10.dp))
 
+            if (errorNama?.isNotBlank() == true) {
+                errorNama?.let {
+                    Text(
+                        text = it,
+                        color = Color.Red,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 8.dp),
+                        textAlign = TextAlign.Center
+                    )
+                }
+            } else {
+                Spacer(modifier = Modifier.height(0.dp))
+            }
+
+            Spacer(modifier = Modifier.height(10.dp))
             OutlinedTextField(
                 value = userEmailInput,
                 onValueChange = { userEmailInput = it },

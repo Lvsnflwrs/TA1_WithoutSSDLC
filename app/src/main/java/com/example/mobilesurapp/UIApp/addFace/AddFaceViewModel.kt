@@ -78,6 +78,9 @@ class AddFaceViewModel @Inject constructor(
 
     private var liveFaceDetector: MediaPipeFaceDetector? = null
 
+    private val _namaError = MutableStateFlow<String?>(null)
+    val namaError: StateFlow<String?> = _namaError
+
     private val _emailError = MutableStateFlow<String?>(null)
     val emailError: StateFlow<String?> = _emailError
 
@@ -112,13 +115,21 @@ class AddFaceViewModel @Inject constructor(
             }
         }
     }
+    private fun isNameValid(): Boolean {
+        val nameRegex = "^[a-zA-Z\\s]{1,50}$".toRegex()
+        return name.value.trim().matches(nameRegex)
+    }
 
     private fun isEmailValid(): Boolean {
-        return email.value.isNotEmpty() && email.value.contains("@")
+        val emailPattern = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}\$"
+        val emailRegex = emailPattern.toRegex()
+        return email.value.trim().matches(emailRegex) && email.value.length <= 100
     }
 
     private fun isPhoneNumValid(): Boolean {
-        return phone.value.isNotEmpty() && phone.value.length in 13..14
+        val phonePattern = "^(08|628)[0-9]{8,12}$"
+        val phoneRegex = phonePattern.toRegex()
+        return phone.value.trim().matches(phoneRegex)
     }
 
     fun startRecording(adminId: String, userName: String, userEmail: String, userPhone: String) {
@@ -133,15 +144,22 @@ class AddFaceViewModel @Inject constructor(
         phone.value = userPhone
 
         var isValid = true
+        if (!isNameValid()) {
+            _namaError.value = "Nama tidak valid! Nama harus alphabet dan maskimal 50 huruf"
+            isValid = false
+        } else {
+            _namaError.value = null
+        }
+
         if (!isEmailValid()) {
-            _emailError.value = "Email tidak valid! Harus mengandung '@'"
+            _emailError.value = "Format email tidak valid atau terlalu panjang."
             isValid = false
         } else {
             _emailError.value = null
         }
 
         if(!isPhoneNumValid()) {
-            _phoneError.value = "Nomor telepon tidak valid (tidak boleh kosong dan tidak melebihi 13 nomor)"
+            _phoneError.value = "Nomor telepon harus diawali 08/628 dan berisi 10-14 angka."
             isValid = false
         } else {
             _phoneError.value = null
