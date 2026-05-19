@@ -19,3 +19,27 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+-assumenosideeffects class android.util.Log {
+    public static boolean isLoggable(java.lang.String, int);
+    public static int v(...);
+    public static int i(...);
+    public static int w(...);
+    public static int d(...);
+    public static int e(...);
+}
+
+-ignorewarnings
+
+-keep class net.sqlcipher.** { *; }
+-keep class androidx.sqlite.db.** { *; }
+-keep class androidx.room.** { *; }
+
+-keep class com.google.mediapipe.** { *; }
+-keep class org.tensorflow.** { *; }
+
+-keep class dagger.** { *; }
+-keep class hilt_aggregated_deps.** { *; }
+-keep class dagger.hilt.internal.** { *; }
+
+-keep class androidx.work.** { *; }
+-keep class kotlinx.coroutines.** { *; }
