@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -10,6 +12,12 @@ android {
     namespace = "com.example.mobilesurapp"
     compileSdk = 36
 
+    val localProperties = Properties()
+    val localPropertiesFile = rootProject.file("local.properties")
+    if (localPropertiesFile.exists()) {
+        localProperties.load(localPropertiesFile.inputStream())
+    }
+
     defaultConfig {
         applicationId = "com.example.mobilesurapp"
         minSdk = 29
@@ -21,6 +29,8 @@ android {
         ndk {
             abiFilters.addAll(listOf("armeabi-v7a", "arm64-v8a", "x86", "x86_64"))
         }
+        val wssUrl = localProperties.getProperty("WSS_URL") ?: "\"\""
+        buildConfigField("String", "WSS_URL", wssUrl)
     }
 
     buildTypes {
@@ -48,6 +58,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 
     configurations.all {

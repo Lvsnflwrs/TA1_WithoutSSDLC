@@ -44,6 +44,8 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import java.security.SecureRandom
 import javax.inject.Singleton
+import com.example.mobilesurapp.BuildConfig
+import java.net.URI
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -58,26 +60,24 @@ object AppModule {
     @Singleton
     fun provideWebSocketClient(okHttpClient: OkHttpClient, gson: Gson): WebSocketClient {
         val websocketClient = WebSocketClient(okHttpClient, gson)
-        websocketClient.connect("wss://192.168.100.47:3000")
+        websocketClient.connect(BuildConfig.WSS_URL)
         return websocketClient
     }
 
     @Provides
     @Singleton
     fun provideOkHttpClient(): OkHttpClient {
+        val host = URI(BuildConfig.WSS_URL).host
+            ?: throw IllegalArgumentException("WSS_URL tidak valid atau kosong")
+
         val certificatePinner = CertificatePinner.Builder()
-            .add("192.168.100.47", "sha256/z2r9npp2ICYAyv/74FuzrVEKXbWi1JJ5hpT0TsjRNO8=")
+            .add(host, "sha256/Cgcdqp4tWwaW/5zVT0SzM3JVarwR9qZzaApjgFqeVic=")
+            .add(host, "sha256/SwPJlmyGOywAipWl7ZJUBwRIx7IZ0oMQL2psW26OKs0=")
+            .add(host, "sha256/i7WTqTvh0OioIruIfFR4kMPnBqrS2rdiVPl/s2uC/CY=")
             .build()
-        val hostnameVerifier = javax.net.ssl.HostnameVerifier { hostname, session ->
-            if (hostname == "192.168.100.47") {
-                true
-            } else {
-                javax.net.ssl.HttpsURLConnection.getDefaultHostnameVerifier().verify(hostname, session)
-            }
-        }
+
         return OkHttpClient.Builder()
             .certificatePinner(certificatePinner)
-            .hostnameVerifier(hostnameVerifier)
             .build()
     }
 
