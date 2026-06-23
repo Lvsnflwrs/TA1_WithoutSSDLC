@@ -48,7 +48,13 @@ class MainActivity : ComponentActivity() {
             ExistingPeriodicWorkPolicy.KEEP,
             syncWorkRequest
         )
-
+        
+        window.decorView.filterTouchesWhenObscured = true
+        window.setFlags(
+            WindowManager.LayoutParams.FLAG_SECURE,
+            WindowManager.LayoutParams.FLAG_SECURE
+        )
+        
         setContent {
             val context = LocalContext.current
             val isSecure = remember { isDeviceSecure(context) }
