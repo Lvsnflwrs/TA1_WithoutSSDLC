@@ -46,11 +46,12 @@ object RaspManager {
             val socket = Socket("127.0.0.1", 27042)
             socket.close()
             fridaPortDetected = true
-        } catch (e: Exception) {
+        } catch (_: Exception) {
         }
 
         val xposedDetected = System.getenv("CLASSPATH")?.contains("XposedBridge") == true
 
         return fridaPortDetected || xposedDetected
     }
+
 }
