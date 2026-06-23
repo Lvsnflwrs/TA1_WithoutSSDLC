@@ -5,12 +5,4 @@
             <certificates src="system" />
         </trust-anchors>
     </base-config>
-
-    <domain-config cleartextTrafficPermitted="false">
-        <domain includeSubdomains="true">192.168.100.47</domain>
-        <trust-anchors>
-            <certificates src="@raw/server_cert" />
-            <certificates src="system" />
-        </trust-anchors>
-    </domain-config>
 </network-security-config>

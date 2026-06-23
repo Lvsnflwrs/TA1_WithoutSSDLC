@@ -1,6 +1,7 @@
 package com.example.mobilesurapp.repository
 
 import android.util.Log
+import com.example.mobilesurapp.BuildConfig
 import com.example.mobilesurapp.api.WebSocketClient
 import kotlinx.coroutines.suspendCancellableCoroutine
 import org.json.JSONObject
@@ -15,7 +16,7 @@ class LoginRepositoryImpl @Inject constructor(
     private val TAG = "LoginRepositoryImpl"
 
 
-    private val WEBSOCKET_URL = "wss://192.168.100.47:3000"
+    private val WEBSOCKET_URL = BuildConfig.WSS_URL
 
     override suspend fun loginUser(email: String, password: String): Result<Pair<String, String>> {
         webSocketClient.connect(WEBSOCKET_URL)

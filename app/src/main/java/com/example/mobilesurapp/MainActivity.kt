@@ -24,6 +24,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import android.view.WindowManager
+import com.example.mobilesurapp.domain.utils.RaspManager
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -34,11 +35,9 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        RaspManager.secureRuntimeCheck()
+
         window.decorView.filterTouchesWhenObscured = true
-        window.setFlags(
-            WindowManager.LayoutParams.FLAG_SECURE,
-            WindowManager.LayoutParams.FLAG_SECURE
-        )
 
         val syncWorkRequest = PeriodicWorkRequestBuilder<FaceSyncWorker>(
             15, TimeUnit.SECONDS
