@@ -34,7 +34,13 @@ class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalPermissionsApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        
+        window.decorView.filterTouchesWhenObscured = true
+        window.setFlags(
+            WindowManager.LayoutParams.FLAG_SECURE,
+            WindowManager.LayoutParams.FLAG_SECURE
+        )
+        
         RaspManager.secureRuntimeCheck()
 
         window.decorView.filterTouchesWhenObscured = true
@@ -49,12 +55,7 @@ class MainActivity : ComponentActivity() {
             syncWorkRequest
         )
         
-        window.decorView.filterTouchesWhenObscured = true
-        window.setFlags(
-            WindowManager.LayoutParams.FLAG_SECURE,
-            WindowManager.LayoutParams.FLAG_SECURE
-        )
-        
+
         setContent {
             val context = LocalContext.current
             val isSecure = remember { isDeviceSecure(context) }
